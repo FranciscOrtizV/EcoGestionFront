@@ -12,7 +12,16 @@ export const routes: Routes = [
   {
     path: 'home',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent)
+    loadComponent: () =>
+      import('./shared/dashboard/dashboard-layout/dashboard-layout.component').then(
+        (m) => m.DashboardLayoutComponent
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent)
+      }
+    ]
   },
   { path: '**', redirectTo: 'home' }
 ];

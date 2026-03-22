@@ -1,0 +1,16 @@
+<div class="dashboard-shell text-gray-800 font-inter">
+  <app-dashboard-sidebar
+    [sidebarOpen]="sidebarOpen"
+    [selectedSidebarGroup]="selectedSidebarGroup"
+    (closeOverlay)="closeSidebar()"
+    (dropdownToggle)="toggleSidebarDropdown($event.event, $event.group)"
+  />
+
+  <main class="bg-gray-200 min-h-screen transition-all main" [class.active]="!sidebarOpen">
+    <app-dashboard-navbar (menuToggle)="toggleSidebar()" (logoutRequested)="logout()" />
+
+    <div class="main-scroll px-6 pb-6 min-w-0 max-w-full">
+      <router-outlet />
+    </div>
+  </main>
+</div>
