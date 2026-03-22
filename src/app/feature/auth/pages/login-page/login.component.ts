@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +23,7 @@ export class LoginComponent {
     this.error = false;
     const ok = this.auth.login(this.email, this.password);
     if (ok) {
-      void this.router.navigateByUrl('/home');
+      void this.router.navigateByUrl('/admin');
     } else {
       this.error = true;
     }

@@ -1,27 +1,18 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
-import { guestGuard } from './guards/guest.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: '', pathMatch: 'full', redirectTo: 'auth' },
   {
-    path: 'login',
+    path: 'auth',
+    loadChildren: () => import('./feature/auth/auth.routes').then((m) => m.AUTH_ROUTES),
     canActivate: [guestGuard],
-    loadComponent: () => import('./pages/login/login.component').then((m) => m.LoginComponent)
   },
   {
-    path: 'home',
+    path: 'admin',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./shared/dashboard/dashboard-layout/dashboard-layout.component').then(
-        (m) => m.DashboardLayoutComponent
-      ),
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent)
-      }
-    ]
+    loadChildren: () => import('./feature/admin/admin.routes').then((m) => m.ADMIN_ROUTES)
   },
-  { path: '**', redirectTo: 'home' }
+  { path: '**', redirectTo: 'auth' }
 ];

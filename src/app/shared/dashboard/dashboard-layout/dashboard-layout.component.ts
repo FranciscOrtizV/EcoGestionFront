@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../../core/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { DashboardNavbarComponent } from '../dashboard-navbar/dashboard-navbar.component';
 import { DashboardSidebarComponent } from '../dashboard-sidebar/dashboard-sidebar.component';
 
@@ -35,6 +35,6 @@ export class DashboardLayoutComponent {
 
   logout(): void {
     this.auth.logout();
-    void this.router.navigateByUrl('/login');
+    void this.router.navigateByUrl('/auth/login');
   }
 }
