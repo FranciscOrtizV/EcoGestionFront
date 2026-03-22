@@ -1,0 +1,12 @@
+<div class="page">
+  <header class="bar">
+    <span class="brand">EcoGestion</span>
+    <button type="button" (click)="logout()">Cerrar sesión</button>
+  </header>
+
+  <main class="content">
+    <h1>Bienvenido</h1>
+    <p>Sesión iniciada como <strong>{{ auth.userEmail() }}</strong>.</p>
+    <p class="muted">Esta ruta solo se ve con usuario autenticado.</p>
+  </main>
+</div>

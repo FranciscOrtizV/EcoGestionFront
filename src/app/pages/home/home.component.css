@@ -1,0 +1,55 @@
+.page {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.brand {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.bar button {
+  padding: 0.45rem 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.bar button:hover {
+  background: #f1f5f9;
+}
+
+.content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.75rem;
+  color: #0f172a;
+}
+
+p {
+  margin: 0 0 0.5rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.muted {
+  font-size: 0.9rem;
+  color: #64748b;
+}
