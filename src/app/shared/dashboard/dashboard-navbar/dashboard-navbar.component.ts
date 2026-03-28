@@ -1,4 +1,5 @@
-import { Component, EventEmitter, HostListener, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Output, inject } from '@angular/core';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard-navbar',
@@ -7,6 +8,9 @@ import { Component, EventEmitter, HostListener, Output } from '@angular/core';
   styleUrl: './dashboard-navbar.component.css'
 })
 export class DashboardNavbarComponent {
+  
+  protected readonly auth = inject(AuthService);
+
   @Output() menuToggle = new EventEmitter<void>();
   @Output() logoutRequested = new EventEmitter<void>();
 

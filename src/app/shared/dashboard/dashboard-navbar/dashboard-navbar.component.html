@@ -55,8 +55,12 @@
           </div>
         </div>
         <div class="p-2 md:block text-left">
-          <h2 class="text-sm font-semibold text-gray-800">Francisco Ortiz</h2>
-          <p class="text-xs text-gray-500">Administrator</p>
+          <h2 class="text-sm font-semibold text-gray-800">
+            {{ auth.currentUser()?.nombre }} {{ auth.currentUser()?.apellidoPaterno }}
+          </h2>
+          <p class="text-xs text-gray-500">
+            {{ auth.currentUser()?.roles?.[0]?.nombre ?? 'Usuario' }}
+          </p>
         </div>
       </button>
       <ul
