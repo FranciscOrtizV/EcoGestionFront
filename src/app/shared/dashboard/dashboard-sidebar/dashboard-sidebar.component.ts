@@ -1,4 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, computed, inject } from '@angular/core';
+import { AuthService } from '../../../core/services/auth.service';
+import { SidebarDropdownGroup } from '../../types';
+import { resolveSidebarByRoles } from './utils/sidebar-nav-entries';
 
 @Component({
   selector: 'app-dashboard-sidebar',
@@ -7,17 +10,21 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrl: './dashboard-sidebar.component.css'
 })
 export class DashboardSidebarComponent {
+  private readonly auth = inject(AuthService);
+
+  readonly sidebarEntries = computed(() => resolveSidebarByRoles(this.auth.currentUser()));
+
   @Input() sidebarOpen = true;
-  @Input() selectedSidebarGroup: 'users' | 'post' | null = null;
+  @Input() selectedSidebarGroup: SidebarDropdownGroup | null = null;
 
   @Output() closeOverlay = new EventEmitter<void>();
-  @Output() dropdownToggle = new EventEmitter<{ event: Event; group: 'users' | 'post' }>();
+  @Output() dropdownToggle = new EventEmitter<{ event: Event; group: SidebarDropdownGroup }>();
 
   onOverlayClick(): void {
     this.closeOverlay.emit();
   }
 
-  onDropdownClick(event: Event, group: 'users' | 'post'): void {
+  onDropdownClick(event: Event, group: SidebarDropdownGroup): void {
     this.dropdownToggle.emit({ event, group });
   }
 }
