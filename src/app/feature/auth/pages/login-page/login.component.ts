@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { toast } from 'ngx-sonner';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -16,7 +15,6 @@ export class LoginComponent {
 
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
 
   /** Errores del servidor (credenciales incorrectas, red, etc.) */
   serverError = false;
@@ -59,7 +57,6 @@ export class LoginComponent {
     this.auth.login({ email, password }).subscribe({
       next: () => {
         toast.success('Sesión iniciada correctamente.');
-        void this.router.navigateByUrl('/admin');
       },
       error: (error) => {
         this.serverError = true;

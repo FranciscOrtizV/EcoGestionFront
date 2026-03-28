@@ -1,0 +1,14 @@
+.emoji-404 {
+  display: block;
+  animation: emoji-bounce 2.5s ease-in-out infinite;
+}
+
+@keyframes emoji-bounce {
+  33%,
+  100% {
+    transform: translateY(0);
+  }
+  66% {
+    transform: translateY(12px);
+  }
+}

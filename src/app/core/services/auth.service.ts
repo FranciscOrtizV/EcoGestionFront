@@ -3,6 +3,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { resolvePrimaryPanelUrl } from '../../shared/dashboard/admin-panel-routes';
 import { type ApiResponse, unwrapApiData } from '../models/api-response.model';
 import type { LoginRequestBody, TokenPair } from '../models/auth-token.model';
 import type { CurrentUser } from '../models/user.model';
@@ -28,6 +29,11 @@ function normalizeTokenResponse(body: unknown): TokenPair {
   return { accessToken: access, refreshToken: refresh };
 }
 
+export type LoadCurrentUserOptions = {
+  /** Tras cargar el perfil, navega al inicio del módulo según roles (típico tras login). */
+  navigateToRoleHome?: boolean;
+};
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
@@ -38,7 +44,6 @@ export class AuthService {
   private readonly _currentUser = signal<CurrentUser | null>(null);
 
   readonly accessToken = this._accessToken.asReadonly();
-  /** Perfil del usuario logueado; solo en memoria (no en sessionStorage). */
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAuthenticated = computed(() => this._accessToken() !== null);
 
@@ -64,19 +69,24 @@ export class AuthService {
     return this.httpPlain.post<unknown>(AUTH_PATHS.login(), body).pipe(
       map((res) => normalizeTokenResponse(res)),
       tap((pair) => this.persistTokens(pair)),
-      switchMap(() => this.loadCurrentUser()),
+      switchMap(() => this.loadCurrentUser({ navigateToRoleHome: true })),
       catchError((err) => throwError(() => err))
     );
   }
 
   /**
    * GET con Bearer (HttpClient interceptado). Guarda el resultado en `currentUser`.
-   * Tras login ya se llama solo; úsalo también si necesitas refrescar el perfil.
+   * Tras login se llama con `navigateToRoleHome`; el guard usa la carga sin redirección.
    */
-  loadCurrentUser(): Observable<void> {
+  loadCurrentUser(options?: LoadCurrentUserOptions): Observable<void> {
     return this.http.get<ApiResponse<CurrentUser>>(AUTH_PATHS.getMe()).pipe(
       map((res) => unwrapApiData(res)),
-      tap((user) => this._currentUser.set(user)),
+      tap((user) => {
+        this._currentUser.set(user);
+        if (options?.navigateToRoleHome) {
+          void this.router.navigateByUrl(resolvePrimaryPanelUrl(user));
+        }
+      }),
       map(() => void 0)
     );
   }

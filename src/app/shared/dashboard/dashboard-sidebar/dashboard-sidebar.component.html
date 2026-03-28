@@ -16,30 +16,52 @@
         }
         @case ('link') {
           <li class="mb-1 group">
-            <a
-              href=""
-              class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100"
-            >
-              <i [class]="entry.iconClass + ' mr-3 text-lg'"></i>
-              <span class="text-sm">{{ entry.label }}</span>
-              @if (entry.badge) {
-                <span
-                  class="md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide rounded-full"
-                  [class.text-red-600]="entry.badge.variant === 'red'"
-                  [class.bg-red-200]="entry.badge.variant === 'red'"
-                  [class.text-green-600]="entry.badge.variant === 'green'"
-                  [class.bg-green-200]="entry.badge.variant === 'green'"
-                  >{{ entry.badge.text }}</span
-                >
-              }
-            </a>
+            @if (entry.routerLink) {
+              <a
+                [routerLink]="entry.routerLink"
+                routerLinkActive="sidebar-link-active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="sidebar-nav-link flex font-semibold items-center py-2 px-4 rounded-md text-gray-900"
+              >
+                <i [class]="entry.iconClass + ' mr-3 text-lg'"></i>
+                <span class="text-sm">{{ entry.label }}</span>
+                @if (entry.badge) {
+                  <span
+                    class="md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide rounded-full"
+                    [class.text-red-600]="entry.badge.variant === 'red'"
+                    [class.bg-red-200]="entry.badge.variant === 'red'"
+                    [class.text-green-600]="entry.badge.variant === 'green'"
+                    [class.bg-green-200]="entry.badge.variant === 'green'"
+                    >{{ entry.badge.text }}</span
+                  >
+                }
+              </a>
+            } @else {
+              <a
+                href=""
+                class="sidebar-nav-link flex font-semibold items-center py-2 px-4 rounded-md text-gray-900 group-[.active]:bg-gray-200 group-[.active]:text-gray-900 group-[.selected]:bg-gray-200 group-[.selected]:text-gray-900"
+              >
+                <i [class]="entry.iconClass + ' mr-3 text-lg'"></i>
+                <span class="text-sm">{{ entry.label }}</span>
+                @if (entry.badge) {
+                  <span
+                    class="md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide rounded-full"
+                    [class.text-red-600]="entry.badge.variant === 'red'"
+                    [class.bg-red-200]="entry.badge.variant === 'red'"
+                    [class.text-green-600]="entry.badge.variant === 'green'"
+                    [class.bg-green-200]="entry.badge.variant === 'green'"
+                    >{{ entry.badge.text }}</span
+                  >
+                }
+              </a>
+            }
           </li>
         }
         @case ('dropdown') {
           <li class="mb-1 group" [class.selected]="selectedSidebarGroup === entry.group">
             <a
               href=""
-              class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle"
+              class="sidebar-nav-link flex font-semibold items-center py-2 px-4 rounded-md text-gray-900 group-[.active]:bg-gray-200 group-[.active]:text-gray-900 group-[.selected]:bg-gray-200 group-[.selected]:text-gray-900 sidebar-dropdown-toggle"
               (click)="onDropdownClick($event, entry.group)"
             >
               <i [class]="entry.iconClass + ' mr-3 text-lg'"></i>

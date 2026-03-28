@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, computed, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { SidebarDropdownGroup } from '../../types';
 import { resolveSidebarByRoles } from './utils/sidebar-nav-entries';
@@ -6,6 +7,7 @@ import { resolveSidebarByRoles } from './utils/sidebar-nav-entries';
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './dashboard-sidebar.component.html',
   styleUrl: './dashboard-sidebar.component.css'
 })

@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
-/** Rutas del módulo administración: solo `inicio` bajo el layout del dashboard. */
-export const ADMIN_ROUTES: Routes = [
+export const PLANIFICADOR_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
@@ -13,7 +12,7 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'inicio',
         loadComponent: () =>
-          import('./pages/inicio/inicio.component').then((m) => m.AdminInicioComponent)
+          import('./pages/inicio/inicio.component').then((m) => m.PlanificadorInicioComponent)
       }
     ]
   }

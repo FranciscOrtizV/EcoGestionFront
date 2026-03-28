@@ -5,6 +5,7 @@ export type SidebarNavEntry =
       id: string;
       iconClass: string;
       label: string;
+      routerLink?: string;
       badge?: { text: string; variant: 'red' | 'green' };
     }
   | {
