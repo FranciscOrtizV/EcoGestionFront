@@ -13,8 +13,13 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'inicio',
         loadComponent: () =>
-          import('./pages/inicio/inicio.component').then((m) => m.AdminInicioComponent)
-      }
+          import('./pages/inicio/inicio.component').then((m) => m.AdminInicioComponent),
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('../users/pages/users/users.page').then((m) => m.UsersPage),
+      },
     ]
   }
 ];
