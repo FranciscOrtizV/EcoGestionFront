@@ -1,28 +1,28 @@
 <section class="w-full max-w-full">
   <h3 class="text-2xl font-semibold text-base-content mb-2">Gestión de usuarios</h3>
   <p class="text-base-content/70 text-sm leading-relaxed mb-4">
-    Área de gestión de usuarios. Aquí podrás listar, crear y administrar cuentas según las reglas de negocio.
+    Área de gestión de usuarios. Aquí podrás listar, crear y administrar cuentas.
   </p>
 
   <div class="flex w-full flex-row gap-4">
     <app-stat-card
       class="block min-w-0 flex-1"
       title="Usuarios totales"
-      [value]="5"
+      [value]="statTotal()"
       cardClass="bg-base-100"
       valueClass="text-info"
     />
     <app-stat-card
       class="block min-w-0 flex-1"
       title="Usuarios activos"
-      [value]="5"
+      [value]="statActivos()"
       cardClass="bg-base-100"
       valueClass="text-success"
     />
     <app-stat-card
       class="block min-w-0 flex-1"
       title="Usuarios inactivos"
-      [value]="5"
+      [value]="statInactivos()"
       cardClass="bg-base-100"
       valueClass="text-error"
     />
@@ -30,6 +30,13 @@
 
   <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
     <h4 class="mb-3 text-lg font-semibold text-base-content">Usuarios</h4>
+
+    @if (loading()) {
+      <div class="mb-3 flex items-center gap-2 text-sm text-base-content/70">
+        <span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
+        Cargando usuarios…
+      </div>
+    }
 
     <app-data-table
       [sortable]="true"

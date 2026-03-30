@@ -1,6 +1,1 @@
-type DummyUserRow = {
-  name: string;
-  email: string;
-  role: string;
-  active: boolean;
-};
+export * from './UserRow.type';
