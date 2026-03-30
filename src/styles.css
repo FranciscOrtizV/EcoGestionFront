@@ -1,2 +1,18 @@
 @import "tailwindcss";
+
+/* Temas habilitados: solo estos se compilan. Debe coincidir con data-theme en index.html (o quitar data-theme y usa --default). */
+@plugin "daisyui" {
+  themes: emerald --default, dim --prefersdark;
+}
+
+/* Hace visible el tema: gray-* de Tailwind no usan variables de DaisyUI; base-* sí. */
+@layer base {
+  html {
+    @apply bg-base-100;
+  }
+  body {
+    @apply bg-base-100 text-base-content antialiased;
+  }
+}
+
 @import "./styles/dashboard-layout.css";

@@ -1,6 +1,53 @@
-<section class="max-w-4xl">
-  <h3 class="text-2xl font-semibold text-gray-900 mb-2">Gestión de usuarios</h3>
-  <p class="text-gray-600 text-sm leading-relaxed">
+<section class="w-full max-w-full">
+  <h3 class="text-2xl font-semibold text-base-content mb-2">Gestión de usuarios</h3>
+  <p class="text-base-content/70 text-sm leading-relaxed mb-4">
     Área de gestión de usuarios. Aquí podrás listar, crear y administrar cuentas según las reglas de negocio.
   </p>
+
+  <div class="flex w-full flex-row gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Usuarios totales"
+      [value]="5"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Usuarios activos"
+      [value]="5"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Usuarios inactivos"
+      [value]="5"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
+    <h4 class="mb-3 text-lg font-semibold text-base-content">Usuarios</h4>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por nombre, correo, rol o estado…"
+      searchInputId="users-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="1"
+      [headers]="userTableHeaders"
+      [rows]="userTableRows()"
+      [columnCellClasses]="userTableColumnClasses"
+      emptyMessage="No hay usuarios para mostrar."
+      [badgeColumn]="{ index: 3, successWhen: 'Activo' }"
+      actionsHeader="Acciones"
+      [actionButtons]="userTableActionButtons"
+      [actionsRowData]="usersForTableActions()"
+      (actionClick)="onUserTableAction($event)"
+    />
+  </div>
 </section>

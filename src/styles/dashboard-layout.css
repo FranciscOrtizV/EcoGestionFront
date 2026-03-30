@@ -42,6 +42,13 @@
   right: 0;
   box-sizing: border-box;
   min-height: 4rem;
+  /* Sombra hacia abajo: separa el header del contenido (tokens del tema). */
+  box-shadow: 0 4px 14px -4px color-mix(in oklch, var(--color-base-content) 10%, transparent);
+}
+
+.dashboard-shell .sidebar-menu {
+  /* Sombra hacia la derecha: el panel de página queda visualmente por debajo. */
+  box-shadow: 4px 0 18px -6px color-mix(in oklch, var(--color-base-content) 10%, transparent);
 }
 
 @media (min-width: 768px) {
