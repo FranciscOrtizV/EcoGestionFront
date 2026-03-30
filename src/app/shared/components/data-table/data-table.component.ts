@@ -47,6 +47,10 @@ export class DataTableComponent {
   /** Cabecera de la columna de acciones (solo si hay `actionButtons`). */
   actionsHeader = input<string>('Acciones');
   actionButtons = input<readonly DataTableActionButton[]>([]);
+  /**
+   * Si se define, devuelve los botones de acción para esa fila (tiene prioridad sobre `actionButtons`).
+   */
+  actionButtonsForRow = input<((row: unknown) => readonly DataTableActionButton[]) | null>(null);
   /** Misma longitud que `rows`: modelo por fila (se envía en `actionClick`). */
   actionsRowData = input<readonly unknown[]>([]);
 
@@ -73,7 +77,9 @@ export class DataTableComponent {
   protected readonly sortColumnIndex = signal<number | null>(null);
   protected readonly sortDirection = signal<'asc' | 'desc'>('asc');
 
-  protected readonly hasActions = computed(() => this.actionButtons().length > 0);
+  protected readonly hasActions = computed(
+    () => this.actionButtonsForRow() != null || this.actionButtons().length > 0,
+  );
 
   protected readonly emptyColspan = computed(
     () => this.headers().length + (this.hasActions() ? 1 : 0),
@@ -279,5 +285,13 @@ export class DataTableComponent {
 
   actionTitle(btn: DataTableActionButton): string {
     return btn.title ?? btn.label;
+  }
+
+  protected actionButtonsForEntry(entry: RowEntry): readonly DataTableActionButton[] {
+    const fn = this.actionButtonsForRow();
+    if (fn) {
+      return fn(entry.model);
+    }
+    return this.actionButtons();
   }
 }

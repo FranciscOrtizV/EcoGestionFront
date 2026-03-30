@@ -26,4 +26,16 @@ export class UsersService {
     );
   }
 
+  desactivarUser(id: string): Observable<void> {
+    return this.http
+      .delete(`${environment.apiUrl}/usuarios/${id}`, { observe: 'response' })
+      .pipe(map(() => undefined));
+  }
+
+  /** Ajusta la URL si tu API usa otra ruta o método. */
+  activarUser(id: string): Observable<void> {
+    return this.http
+      .patch(`${environment.apiUrl}/usuarios/habilitar/${id}`, {}, { observe: 'response' })
+      .pipe(map(() => undefined));
+  }
 }

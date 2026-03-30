@@ -1,0 +1,23 @@
+<div
+  class="modal modal-open z-[200]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-confirm-dialog-title"
+>
+  <div class="modal-box relative z-10" (click)="$event.stopPropagation()">
+    <h3 id="app-confirm-dialog-title" class="text-lg font-bold">{{ title() }}</h3>
+    <p class="py-4 text-base-content/80">{{ message() }}</p>
+    <div class="modal-action">
+      <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+      <button type="button" [class]="'btn btn-' + confirmButtonColor()" (click)="onConfirm()">
+        Confirmar
+      </button>
+    </div>
+  </div>
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar diálogo"
+  ></button>
+</div>

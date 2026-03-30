@@ -7,6 +7,7 @@ import {
   DataTableComponent,
 } from '../../../../shared/components/data-table/data-table.component';
 import { StatCardComponent } from '../../../../shared/components/stat-card/stat-card.component';
+import { LoadingService } from '../../../../core/services/loading.service';
 import { UsersService } from '../../../../core/services/users.service';
 import type { UserRow } from '../../types';
 
@@ -19,6 +20,7 @@ import type { UserRow } from '../../types';
 })
 export class UsersPage implements OnInit {
   private readonly usersService = inject(UsersService);
+  private readonly loadingService = inject(LoadingService);
 
   readonly tablePageSize = 5;
   readonly userTableHeaders = ['Nombre', 'Correo', 'Rol', 'Estado'] as const;
@@ -37,7 +39,6 @@ export class UsersPage implements OnInit {
   ];
 
   readonly users = signal<UserRow[]>([]);
-  readonly loading = signal(false);
 
   readonly statTotal = computed(() => this.users().length);
   readonly statActivos = computed(() => this.users().filter((u) => u.active).length);
@@ -54,15 +55,16 @@ export class UsersPage implements OnInit {
   }
 
   loadUsers(): void {
-    this.loading.set(true);
+    this.loadingService.setLoading(true);
     this.usersService
       .getUsers()
       .pipe(
         catchError((err: unknown) => {
           toast.error('Ocurrió un error al intentar obtener la lista de usuarios');
+          console.error(err);
           return of([] as UserRow[]);
         }),
-        finalize(() => this.loading.set(false)),
+        finalize(() => this.loadingService.setLoading(false)),
       )
       .subscribe((list) => this.users.set(list));
   }

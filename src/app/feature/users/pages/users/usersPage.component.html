@@ -31,13 +31,6 @@
   <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
     <h4 class="mb-3 text-lg font-semibold text-base-content">Usuarios</h4>
 
-    @if (loading()) {
-      <div class="mb-3 flex items-center gap-2 text-sm text-base-content/70">
-        <span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
-        Cargando usuarios…
-      </div>
-    }
-
     <app-data-table
       [sortable]="true"
       [searchable]="true"
@@ -52,9 +45,19 @@
       emptyMessage="No hay usuarios para mostrar."
       [badgeColumn]="{ index: 3, successWhen: 'Activo' }"
       actionsHeader="Acciones"
-      [actionButtons]="userTableActionButtons"
+      [actionButtonsForRow]="userTableActionsForRow"
       [actionsRowData]="usersForTableActions()"
       (actionClick)="onUserTableAction($event)"
     />
   </div>
 </section>
+
+@if (userPendingAction(); as ctx) {
+  <app-confirm-dialog
+    [title]="ctx.mode === 'desactivar' ? '¿Desactivar usuario?' : '¿Activar usuario?'"
+    [message]="(ctx.mode === 'desactivar' ? '¿Desea desactivar a ' : '¿Desea activar a ') + ctx.user.name + '?'"
+    [confirmButtonColor]="ctx.mode === 'desactivar' ? 'error' : 'primary'"
+    (cancelled)="cancelUserAction()"
+    (confirmed)="confirmUserAction()"
+  />
+}

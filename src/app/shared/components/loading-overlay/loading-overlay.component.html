@@ -1,0 +1,18 @@
+<div [ngClass]="['relative', wrapperClass()]">
+  <ng-content />
+
+  @if (loading()) {
+    <div
+      [ngClass]="[
+        'absolute inset-0 z-10 flex cursor-wait items-center justify-center rounded-[inherit] bg-base-content/25 backdrop-blur-[2px]',
+        overlayClass(),
+      ]"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <span class="loading loading-infinity loading-xl text-primary" aria-hidden="true"></span>
+      <span class="sr-only">Cargando…</span>
+    </div>
+  }
+</div>
