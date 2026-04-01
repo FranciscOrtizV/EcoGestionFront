@@ -6,18 +6,19 @@ import {
   DataTableActionPayload,
   DataTableComponent,
 } from '../../../../shared/components/data-table/data-table.component';
+import { CreateUserModalComponent } from '../../components/create-user-modal/create-user-modal.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { StatCardComponent } from '../../../../shared/components/stat-card/stat-card.component';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { UsersService } from '../../../../core/services/users.service';
-import type { UserRow } from '../../types';
+import type { UserFormModalContext, UserRow } from '../../types';
 
 type UserToggleConfirm = { mode: 'desactivar'; user: UserRow } | { mode: 'activar'; user: UserRow };
 
 @Component({
   selector: 'app-users-page',
   standalone: true,
-  imports: [ConfirmDialogComponent, DataTableComponent, StatCardComponent],
+  imports: [ConfirmDialogComponent, CreateUserModalComponent, DataTableComponent, StatCardComponent],
   templateUrl: './usersPage.component.html',
   styleUrl: './usersPage.component.css',
 })
@@ -59,6 +60,9 @@ export class UsersPage implements OnInit {
   /** Confirmación de activar / desactivar (null = modal cerrado). */
   protected readonly userPendingAction = signal<UserToggleConfirm | null>(null);
 
+  /** Modal crear / editar usuario (`null` = cerrado). */
+  protected readonly userFormModal = signal<UserFormModalContext | null>(null);
+
   readonly statTotal = computed(() => this.users().length);
   readonly statActivos = computed(() => this.users().filter((u) => u.active).length);
   readonly statInactivos = computed(() => this.users().filter((u) => !u.active).length);
@@ -99,13 +103,11 @@ export class UsersPage implements OnInit {
   }
 
   private onVerUsuario(user: UserRow): void {
-    alert('Ver usuario');
-    console.log(user);
+    this.userFormModal.set({ mode: 'view', userId: user.id });
   }
 
   private onEditarUsuario(user: UserRow): void {
-    alert('Editar usuario');
-    console.log(user);
+    this.userFormModal.set({ mode: 'edit', userId: user.id });
   }
 
   private onDesactivarUsuario(user: UserRow): void {
@@ -114,6 +116,19 @@ export class UsersPage implements OnInit {
 
   private onActivarUsuario(user: UserRow): void {
     this.userPendingAction.set({ mode: 'activar', user });
+  }
+
+  protected openCreateUserModal(): void {
+    this.userFormModal.set({ mode: 'create' });
+  }
+
+  protected closeUserFormModal(): void {
+    this.userFormModal.set(null);
+  }
+
+  protected onUserFormSaved(): void {
+    this.userFormModal.set(null);
+    this.loadUsers();
   }
 
   protected cancelUserAction(): void {

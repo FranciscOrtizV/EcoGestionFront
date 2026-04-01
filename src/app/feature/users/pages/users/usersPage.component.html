@@ -29,7 +29,13 @@
   </div>
 
   <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
-    <h4 class="mb-3 text-lg font-semibold text-base-content">Usuarios</h4>
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Usuarios</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateUserModal()">
+        <span class="ri-user-add-line" aria-hidden="true"></span>
+        Crear usuario
+      </button>
+    </div>
 
     <app-data-table
       [sortable]="true"
@@ -51,6 +57,14 @@
     />
   </div>
 </section>
+
+@if (userFormModal(); as formCtx) {
+  <app-create-user-modal
+    [context]="formCtx"
+    (cancelled)="closeUserFormModal()"
+    (saved)="onUserFormSaved()"
+  />
+}
 
 @if (userPendingAction(); as ctx) {
   <app-confirm-dialog
