@@ -12,8 +12,8 @@ export const CONDUCTOR_ROUTES: Routes = [
       {
         path: 'inicio',
         loadComponent: () =>
-          import('./pages/inicio/inicio.component').then((m) => m.ConductorInicioComponent)
-      }
+          import('./pages/inicio/inicio.component').then((m) => m.ConductorInicioComponent),
+      },
     ]
   }
 ];

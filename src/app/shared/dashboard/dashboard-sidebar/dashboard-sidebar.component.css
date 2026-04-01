@@ -2,27 +2,25 @@
   display: contents;
 }
 
-/* Enlace del menú: hover suave (sin fondo casi negro). */
 .sidebar-nav-link {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .sidebar-nav-link:hover {
-  background-color: rgb(0 0 0 / 0.06);
-  color: rgb(17 24 39);
+  background-color: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+  color: var(--color-base-content);
 }
 
-/* Ruta activa: acento de marca + texto oscuro para que iconos y label se lean bien */
 .sidebar-link-active {
-  background-color: rgba(248, 69, 37, 0.12);
-  color: rgb(17 24 39);
+  background-color: color-mix(in oklch, var(--color-primary) 18%, transparent);
+  color: var(--color-base-content);
   font-weight: 600;
-  box-shadow: inset 3px 0 0 #f84525;
+  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 .sidebar-link-active:hover {
-  background-color: rgba(248, 69, 37, 0.18);
-  color: rgb(17 24 39);
+  background-color: color-mix(in oklch, var(--color-primary) 26%, transparent);
+  color: var(--color-base-content);
 }
 
 .sidebar-nav-link.sidebar-link-active i,

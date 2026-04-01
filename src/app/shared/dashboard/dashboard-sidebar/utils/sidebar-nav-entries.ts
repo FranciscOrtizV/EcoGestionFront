@@ -28,6 +28,13 @@ export const SIDEBAR_SUPERVISOR: SidebarNavEntry[] = [
 export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
   { kind: 'section', id: 'sec-admin', label: 'ADMINISTRACIÓN' },
   inicioLink('adm-inicio', 'ri-settings-3-line', PANEL_HOME_URLS.admin),
+  {
+    kind: 'link',
+    id: 'adm-usuarios',
+    iconClass: 'ri-user-settings-line',
+    label: 'Usuarios',
+    routerLink: PANEL_HOME_URLS.adminUsuarios,
+  },
 ];
 
 export function resolveSidebarByRoles(

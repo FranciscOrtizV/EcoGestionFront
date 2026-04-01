@@ -1,0 +1,151 @@
+@let badgeCol = badgeColumn();
+
+@if (searchable()) {
+  <div class="mb-3 flex justify-end">
+    <label class="input input-bordered flex w-full max-w-md items-center gap-2 sm:w-auto">
+      <i class="ri-search-line text-base-content/50" aria-hidden="true"></i>
+      <input
+        [id]="searchInputId()"
+        type="search"
+        class="min-w-0 grow"
+        [placeholder]="searchPlaceholder()"
+        autocomplete="off"
+        [value]="internalSearch()"
+        (input)="onSearchInput($event)"
+      />
+    </label>
+  </div>
+}
+
+<div class="overflow-x-auto">
+  <table class="table" [class.table-zebra]="zebra()">
+    <thead>
+      <tr>
+        @for (h of headers(); track $index) {
+          <th
+            [class]="thClass($index)"
+            [attr.aria-sort]="
+              sortable() && isColumnSortable($index) ? sortAriaSort($index) : null
+            "
+          >
+            @if (sortable() && isColumnSortable($index)) {
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm -ml-2 h-auto min-h-0 gap-1 px-2 py-1 font-semibold normal-case"
+                (click)="toggleSort($index)"
+                [attr.aria-label]="sortButtonAriaLabel(h, $index)"
+              >
+                {{ h }}
+                @if (sortColumnIndex() === $index) {
+                  @if (sortDirection() === 'asc') {
+                    <i class="ri-arrow-up-s-line shrink-0" aria-hidden="true"></i>
+                  } @else {
+                    <i class="ri-arrow-down-s-line shrink-0" aria-hidden="true"></i>
+                  }
+                } @else {
+                  <i class="ri-arrow-up-down-line shrink-0 text-base-content/35" aria-hidden="true"></i>
+                }
+              </button>
+            } @else {
+              {{ h }}
+            }
+          </th>
+        }
+        @if (hasActions()) {
+          <th class="w-1 whitespace-nowrap text-end">{{ actionsHeader() }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @if (rows().length === 0) {
+        <tr>
+          <td [attr.colspan]="emptyColspan()" class="py-8 text-center text-base-content/60">
+            {{ emptyMessage() }}
+          </td>
+        </tr>
+      } @else if (filteredEntries().length === 0) {
+        <tr>
+          <td [attr.colspan]="emptyColspan()" class="py-8 text-center text-base-content/60">
+            {{ filterEmptyMessage() }}
+          </td>
+        </tr>
+      } @else {
+        @for (entry of displayEntries(); track rowTrackKey($index); let ri = $index) {
+          <tr>
+            @for (cell of entry.cells; track $index) {
+              <td [class]="tdClass($index)">
+                @if (badgeCol !== null && badgeCol.index === $index) {
+                  <span
+                    class="badge badge-sm"
+                    [class.badge-success]="'' + cell === badgeCol.successWhen"
+                    [class.badge-ghost]="'' + cell !== badgeCol.successWhen"
+                  >
+                    {{ cell }}
+                  </span>
+                } @else {
+                  {{ cell }}
+                }
+              </td>
+            }
+            @if (hasActions()) {
+              <td class="text-end">
+                <div class="flex items-center justify-end gap-0.5">
+                  @for (btn of actionButtonsForEntry(entry); track btn.id) {
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm btn-square"
+                      [ngClass]="btn.buttonClass"
+                      [title]="actionTitle(btn)"
+                      [attr.aria-label]="btn.label"
+                      (click)="onActionButtonClick(btn.id, entry, ri)"
+                    >
+                      <i [class]="btn.iconClass + ' text-lg'" aria-hidden="true"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            }
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (paginate() && totalPages() > 0) {
+  <div class="mt-4 flex flex-col gap-3 border-t border-base-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-sm text-base-content/60">{{ pageRangeLabel() }}</p>
+    <div class="join flex-wrap justify-center">
+      <button
+        type="button"
+        class="join-item btn btn-sm"
+        [disabled]="effectivePage() <= 1"
+        (click)="goPrevPage()"
+        aria-label="Página anterior"
+      >
+        «
+      </button>
+      @for (n of pageNumbers(); track n) {
+        <button
+          type="button"
+          class="join-item btn btn-sm"
+          [class.btn-active]="n === effectivePage()"
+          (click)="goToPage(n)"
+          [attr.aria-current]="n === effectivePage() ? 'page' : null"
+          [attr.aria-label]="'Ir a página ' + n"
+        >
+          {{ n }}
+        </button>
+      }
+      <button
+        type="button"
+        class="join-item btn btn-sm"
+        [disabled]="effectivePage() >= totalPages()"
+        (click)="goNextPage()"
+        aria-label="Página siguiente"
+      >
+        »
+      </button>
+    </div>
+  </div>
+}

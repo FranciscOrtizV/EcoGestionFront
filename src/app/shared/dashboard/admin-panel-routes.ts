@@ -3,6 +3,8 @@ import { RolesEnum } from '../enums/Rol.enum';
 /** Pantalla de inicio de cada módulo (coinciden con `app.routes.ts`). */
 export const PANEL_HOME_URLS = {
   admin: '/admin/inicio',
+  /** Solo administración (rol ADMIN). */
+  adminUsuarios: '/admin/usuarios',
   supervisor: '/supervisor/inicio',
   planificador: '/planificador/inicio',
   conductor: '/conductor/inicio',

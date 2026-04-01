@@ -1,0 +1,193 @@
+<div
+  class="modal modal-open z-200"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-create-user-modal-title"
+>
+  <div
+    class="modal-box relative z-10 max-w-lg max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()"
+  >
+    <h3 id="app-create-user-modal-title" class="text-lg font-bold">
+      @if (isView()) {
+        Ver usuario
+      } @else if (isEdit()) {
+        Editar usuario
+      } @else {
+        Nuevo usuario
+      }
+    </h3>
+    <p class="py-2 text-sm text-base-content/70">
+      @if (isView()) {
+        Datos de la cuenta (solo lectura).
+      } @else if (isEdit()) {
+        Modifica los datos y guarda los cambios.
+      } @else {
+        Completa los datos para registrar una cuenta.
+      }
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="space-y-4">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label for="create-user-nombre" class="mb-1 block text-sm text-base-content/80">Nombre</label>
+          <input
+            id="create-user-nombre"
+            type="text"
+            formControlName="nombre"
+            autocomplete="given-name"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('nombre') ? 'input-error' : ''"
+          />
+          @if (fieldInvalid('nombre')) {
+            @if (form.controls.nombre.hasError('required')) {
+              <p class="mt-1 text-sm text-error">El nombre es obligatorio.</p>
+            } @else if (form.controls.nombre.hasError('minlength')) {
+              <p class="mt-1 text-sm text-error">Indica al menos un carácter.</p>
+            }
+          }
+        </div>
+        <div>
+          <label for="create-user-ap1" class="mb-1 block text-sm text-base-content/80">Apellido paterno</label>
+          <input
+            id="create-user-ap1"
+            type="text"
+            formControlName="apellidoPaterno"
+            autocomplete="family-name"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('apellidoPaterno') ? 'input-error' : ''"
+          />
+          @if (fieldInvalid('apellidoPaterno')) {
+            @if (form.controls.apellidoPaterno.hasError('required')) {
+              <p class="mt-1 text-sm text-error">Campo obligatorio.</p>
+            } @else if (form.controls.apellidoPaterno.hasError('minlength')) {
+              <p class="mt-1 text-sm text-error">Indica al menos un carácter.</p>
+            }
+          }
+        </div>
+        <div>
+          <label for="create-user-ap2" class="mb-1 block text-sm text-base-content/80">Apellido materno</label>
+          <input
+            id="create-user-ap2"
+            type="text"
+            formControlName="apellidoMaterno"
+            autocomplete="off"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('apellidoMaterno') ? 'input-error' : ''"
+          />
+          @if (fieldInvalid('apellidoMaterno')) {
+            @if (form.controls.apellidoMaterno.hasError('required')) {
+              <p class="mt-1 text-sm text-error">Campo obligatorio.</p>
+            } @else if (form.controls.apellidoMaterno.hasError('minlength')) {
+              <p class="mt-1 text-sm text-error">Indica al menos un carácter.</p>
+            }
+          }
+        </div>
+      </div>
+
+      <div>
+        <label for="create-user-email" class="mb-1 block text-sm text-base-content/80">Correo</label>
+        <input
+          id="create-user-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          class="input input-bordered w-full bg-base-100"
+          [ngClass]="fieldInvalid('email') ? 'input-error' : ''"
+        />
+        @if (fieldInvalid('email')) {
+          @if (form.controls.email.hasError('required')) {
+            <p class="mt-1 text-sm text-error">El correo es obligatorio.</p>
+          } @else if (form.controls.email.hasError('email')) {
+            <p class="mt-1 text-sm text-error">Introduce un correo válido.</p>
+          }
+        }
+      </div>
+
+      <div>
+        <label for="create-user-phone" class="mb-1 block text-sm text-base-content/80"
+          >Teléfono @if (!isView()) {
+            (opcional)
+          }</label
+        >
+        <input
+          id="create-user-phone"
+          type="tel"
+          formControlName="phone"
+          autocomplete="tel"
+          class="input input-bordered w-full bg-base-100"
+          [ngClass]="fieldInvalid('phone') ? 'input-error' : ''"
+        />
+        @if (phoneErrorMessage(); as msg) {
+          <p class="mt-1 text-sm text-error">{{ msg }}</p>
+        }
+      </div>
+
+      <div>
+        <label for="create-user-rol" class="mb-1 block text-sm text-base-content/80">Rol</label>
+        <select
+          id="create-user-rol"
+          formControlName="rolId"
+          class="select select-bordered w-full bg-base-100"
+          [ngClass]="fieldInvalid('rolId') ? 'select-error' : ''"
+        >
+          @if (!rolesLoaded()) {
+            <option value="" disabled>Cargando roles…</option>
+          } @else if (roleOptions().length === 0) {
+            <option value="" disabled>No hay roles disponibles</option>
+          } @else {
+            @for (opt of roleOptions(); track opt.id) {
+              <option [value]="opt.id">{{ opt.nombre }}</option>
+            }
+          }
+        </select>
+        @if (rolErrorMessage(); as msg) {
+          <p class="mt-1 text-sm text-error">{{ msg }}</p>
+        }
+      </div>
+
+      @if (!isView()) {
+        <div>
+          <label for="create-user-password" class="mb-1 block text-sm text-base-content/80">
+            {{ isEdit() ? 'Nueva contraseña (opcional)' : 'Contraseña' }}
+          </label>
+          <p class="mb-1 text-xs text-base-content/60">
+            @if (isEdit()) {
+              Si no escribe contraseña se mantendrá la actual.
+            } @else {
+              Entre 6 y 50 caracteres: mayúsculas, minúsculas y un número o carácter especial.
+            }
+          </p>
+          <input
+            id="create-user-password"
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('password') ? 'input-error' : ''"
+          />
+          @if (passwordErrorMessage(); as msg) {
+            <p class="mt-1 text-sm text-error">{{ msg }}</p>
+          }
+        </div>
+      }
+
+      <div class="modal-action pt-2">
+        @if (isView()) {
+          <button type="button" class="btn btn-primary" (click)="onCancel()">Cerrar</button>
+        } @else {
+          <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            {{ isEdit() ? 'Guardar cambios' : 'Crear usuario' }}
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar"
+  ></button>
+</div>
