@@ -33,7 +33,21 @@ export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
     id: 'adm-usuarios',
     iconClass: 'ri-user-settings-line',
     label: 'Usuarios',
-    routerLink: PANEL_HOME_URLS.adminUsuarios,
+    routerLink: '/admin/usuarios',
+  },
+  {
+    kind: 'link',
+    id: 'adm-vehiculos',
+    iconClass: 'ri-truck-line',
+    label: 'Vehiculos',
+    routerLink: '/admin/vehiculos',
+  },
+  {
+    kind: 'link',
+    id: 'adm-tipos-incidencias',
+    iconClass: 'ri-alert-line',
+    label: 'Tipos de incidencia',
+    routerLink: '/admin/tiposIncidencias',
   },
 ];
 

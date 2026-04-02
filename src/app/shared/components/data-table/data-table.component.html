@@ -75,13 +75,19 @@
             @for (cell of entry.cells; track $index) {
               <td [class]="tdClass($index)">
                 @if (badgeCol !== null && badgeCol.index === $index) {
-                  <span
-                    class="badge badge-sm"
-                    [class.badge-success]="'' + cell === badgeCol.successWhen"
-                    [class.badge-ghost]="'' + cell !== badgeCol.successWhen"
-                  >
-                    {{ cell }}
-                  </span>
+                  @if (badgeCol.badgeClass) {
+                    <span class="badge badge-sm" [ngClass]="badgeCol.badgeClass('' + cell)">
+                      {{ cell }}
+                    </span>
+                  } @else {
+                    <span
+                      class="badge badge-sm"
+                      [class.badge-success]="'' + cell === badgeCol.successWhen"
+                      [class.badge-ghost]="'' + cell !== badgeCol.successWhen"
+                    >
+                      {{ cell }}
+                    </span>
+                  }
                 } @else {
                   {{ cell }}
                 }

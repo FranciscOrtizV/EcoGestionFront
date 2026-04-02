@@ -20,6 +20,17 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('../users/pages/users/usersPage.component').then((m) => m.UsersPage),
       },
+      {
+        path: 'vehiculos',
+        loadComponent: () =>
+          import('../vehiculos/pages/vehiculos/vehiculosPage.component').then((m) => m.VehiculosPage),
+      },
+      {
+        path: 'tiposIncidencias',
+        loadComponent: () =>
+          import('../incidencias/pages/incidencias/incidenciasPage.component').then((m) => m.IncidenciasPage),
+      },
+
     ]
   }
 ];
