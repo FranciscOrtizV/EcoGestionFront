@@ -1,0 +1,181 @@
+<div
+  class="modal modal-open z-[200]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-create-vehiculo-modal-title"
+>
+  <div
+    class="modal-box relative z-10 max-w-lg max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()"
+  >
+    <h3 id="app-create-vehiculo-modal-title" class="text-lg font-bold">
+      @if (isView()) {
+        Ver vehículo
+      } @else if (isEdit()) {
+        Editar vehículo
+      } @else {
+        Nuevo vehículo
+      }
+    </h3>
+    <p class="py-2 text-sm text-base-content/70">
+      @if (isView()) {
+        Datos del vehículo (solo lectura).
+      } @else if (isEdit()) {
+        Modifica los datos y guarda los cambios.
+      } @else {
+        Completa los datos del vehículo.
+      }
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="space-y-4">
+      <div>
+        <label for="cv-patente" class="mb-1 block text-sm text-base-content/80">
+          Patente@if (!isView()) {
+            *
+          }
+        </label>
+        <input
+          id="cv-patente"
+          type="text"
+          formControlName="patente"
+          autocomplete="off"
+          class="input input-bordered w-full bg-base-100 uppercase"
+          [ngClass]="fieldInvalid('patente') ? 'input-error' : ''"
+        />
+        @if (fieldInvalid('patente')) {
+          @if (form.controls.patente.hasError('required')) {
+            <p class="mt-1 text-sm text-error">La patente es obligatoria.</p>
+          } @else if (form.controls.patente.hasError('minlength')) {
+            <p class="mt-1 text-sm text-error">Indica al menos un carácter.</p>
+          } @else if (form.controls.patente.hasError('maxlength')) {
+            <p class="mt-1 text-sm text-error">Máximo 20 caracteres.</p>
+          }
+        }
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label for="cv-codigo" class="mb-1 block text-sm text-base-content/80">Código interno</label>
+          <input
+            id="cv-codigo"
+            type="text"
+            formControlName="codigoInterno"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('codigoInterno') ? 'input-error' : ''"
+          />
+          @if (fieldInvalid('codigoInterno') && form.controls.codigoInterno.hasError('maxlength')) {
+            <p class="mt-1 text-sm text-error">Máximo 50 caracteres.</p>
+          }
+        </div>
+        <div>
+          <label for="cv-estado" class="mb-1 block text-sm text-base-content/80">
+            Estado@if (!isView()) {
+              *
+            }
+          </label>
+          <select id="cv-estado" formControlName="estado" class="select select-bordered w-full bg-base-100">
+            @for (opt of estadoOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label for="cv-marca" class="mb-1 block text-sm text-base-content/80">Marca</label>
+          <input
+            id="cv-marca"
+            type="text"
+            formControlName="marca"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('marca') ? 'input-error' : ''"
+          />
+          @if (fieldInvalid('marca') && form.controls.marca.hasError('maxlength')) {
+            <p class="mt-1 text-sm text-error">Máximo 100 caracteres.</p>
+          }
+        </div>
+        <div>
+          <label for="cv-modelo" class="mb-1 block text-sm text-base-content/80">Modelo</label>
+          <input
+            id="cv-modelo"
+            type="text"
+            formControlName="modelo"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('modelo') ? 'input-error' : ''"
+          />
+          @if (fieldInvalid('modelo') && form.controls.modelo.hasError('maxlength')) {
+            <p class="mt-1 text-sm text-error">Máximo 100 caracteres.</p>
+          }
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div>
+          <label for="cv-anio" class="mb-1 block text-sm text-base-content/80">Año</label>
+          <input
+            id="cv-anio"
+            type="number"
+            formControlName="anioVehiculo"
+            inputmode="numeric"
+            min="1900"
+            [attr.max]="maxAnioVehiculo"
+            step="1"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('anioVehiculo') ? 'input-error' : ''"
+          />
+          @if (anioErrorMessage(); as msg) {
+            <p class="mt-1 text-sm text-error">{{ msg }}</p>
+          }
+        </div>
+        <div>
+          <label for="cv-kg" class="mb-1 block text-sm text-base-content/80">Capacidad kg</label>
+          <input
+            id="cv-kg"
+            type="number"
+            formControlName="capacidadKg"
+            min="0"
+            step="any"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('capacidadKg') ? 'input-error' : ''"
+          />
+          @if (numberOrMinError('capacidadKg', 'La capacidad'); as msg) {
+            <p class="mt-1 text-sm text-error">{{ msg }}</p>
+          }
+        </div>
+        <div>
+          <label for="cv-m3" class="mb-1 block text-sm text-base-content/80">Capacidad m³</label>
+          <input
+            id="cv-m3"
+            type="number"
+            formControlName="capacidadM3"
+            min="0"
+            step="any"
+            class="input input-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('capacidadM3') ? 'input-error' : ''"
+          />
+          @if (numberOrMinError('capacidadM3', 'La capacidad'); as msg) {
+            <p class="mt-1 text-sm text-error">{{ msg }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="modal-action pt-2">
+        @if (isView()) {
+          <button type="button" class="btn btn-primary" (click)="onCancel()">Cerrar</button>
+        } @else {
+          <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            {{ isEdit() ? 'Guardar cambios' : 'Crear vehículo' }}
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar"
+  ></button>
+</div>

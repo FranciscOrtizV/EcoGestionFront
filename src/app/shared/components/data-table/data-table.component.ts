@@ -15,6 +15,13 @@ export type DataTableActionButton = {
   buttonClass?: string;
 };
 
+/** Badge en una columna: usa `successWhen` (éxito vs ghost) o `badgeClass` (clases por texto de celda). */
+export type DataTableBadgeColumn = {
+  index: number;
+  successWhen?: string;
+  badgeClass?: (cell: string) => string;
+};
+
 export type DataTableActionPayload = {
   actionId: string;
   row: unknown;
@@ -42,7 +49,7 @@ export class DataTableComponent {
   columnHeaderClasses = input<readonly (string | undefined)[]>([]);
   emptyMessage = input<string>('No hay datos para mostrar.');
   zebra = input(true);
-  badgeColumn = input<{ index: number; successWhen: string } | null>(null);
+  badgeColumn = input<DataTableBadgeColumn | null>(null);
 
   /** Cabecera de la columna de acciones (solo si hay `actionButtons`). */
   actionsHeader = input<string>('Acciones');
