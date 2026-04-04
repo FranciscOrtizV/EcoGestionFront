@@ -1,0 +1,86 @@
+<div
+  class="modal modal-open z-[200]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-create-tipo-incidencia-modal-title"
+>
+  <div
+    class="modal-box relative z-10 max-w-lg max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()"
+  >
+    <h3 id="app-create-tipo-incidencia-modal-title" class="text-lg font-bold">
+      @if (isView()) {
+        Ver tipo de incidencia
+      } @else if (isEdit()) {
+        Editar tipo de incidencia
+      } @else {
+        Nuevo tipo de incidencia
+      }
+    </h3>
+    <p class="py-2 text-sm text-base-content/70">
+      @if (isView()) {
+        Datos del tipo (solo lectura).
+      } @else if (isEdit()) {
+        Solo puedes modificar la descripción.
+      } @else {
+        Indica el nombre y, si quieres, una descripción.
+      }
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="space-y-4">
+      <div>
+        <label for="cti-nombre" class="mb-1 block text-sm text-base-content/80">
+          Nombre@if (!isView()) {
+            *
+          }
+        </label>
+        <input
+          id="cti-nombre"
+          type="text"
+          formControlName="nombre"
+          autocomplete="off"
+          class="input input-bordered w-full bg-base-100"
+          [ngClass]="fieldInvalid('nombre') ? 'input-error' : ''"
+        />
+        @if (fieldInvalid('nombre')) {
+          @if (form.controls.nombre.hasError('required')) {
+            <p class="mt-1 text-sm text-error">El nombre es obligatorio.</p>
+          } @else if (form.controls.nombre.hasError('maxlength')) {
+            <p class="mt-1 text-sm text-error">Máximo 100 caracteres.</p>
+          }
+        }
+      </div>
+
+      <div>
+        <label for="cti-descripcion" class="mb-1 block text-sm text-base-content/80">Descripción</label>
+        <textarea
+          id="cti-descripcion"
+          formControlName="descripcion"
+          rows="5"
+          class="textarea textarea-bordered w-full bg-base-100 min-h-[6rem]"
+          [ngClass]="fieldInvalid('descripcion') ? 'textarea-error' : ''"
+        ></textarea>
+        @if (fieldInvalid('descripcion') && form.controls.descripcion.hasError('maxlength')) {
+          <p class="mt-1 text-sm text-error">Máximo 5000 caracteres.</p>
+        }
+      </div>
+
+      <div class="modal-action pt-2">
+        @if (isView()) {
+          <button type="button" class="btn btn-primary" (click)="onCancel()">Cerrar</button>
+        } @else {
+          <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">
+            {{ isEdit() ? 'Guardar cambios' : 'Crear tipo' }}
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar"
+  ></button>
+</div>
