@@ -28,7 +28,9 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'tiposIncidencias',
         loadComponent: () =>
-          import('../incidencias/pages/incidencias/incidenciasPage.component').then((m) => m.IncidenciasPage),
+          import('../tiposIncidencias/pages/tiposIncidencias/tiposIncidencias.component').then(
+            (m) => m.TiposIncidenciasPage,
+          ),
       },
 
     ]
