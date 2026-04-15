@@ -1,0 +1,83 @@
+<section class="w-full max-w-full">
+  <h3 class="text-2xl font-semibold text-base-content mb-2">Zonas</h3>
+  <p class="text-base-content/70 text-sm leading-relaxed mb-4">
+    Área de gestión de zonas. Aquí podrás listar y administrar las zonas disponibles en el sistema.
+  </p>
+
+  <div class="flex w-full flex-row flex-wrap gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1 basis-[10rem]"
+      title="Zonas totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1 basis-[10rem]"
+      title="Zonas activas"
+      [value]="statActivas()"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1 basis-[10rem]"
+      title="Zonas inactivas"
+      [value]="statInactivas()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Listado</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateModal()">
+        <span class="ri-add-line" aria-hidden="true"></span>
+        Crear zona
+      </button>
+    </div>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por nombre, código, descripción o estado…"
+      searchInputId="zonas-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="0"
+      [headers]="zonaTableHeaders"
+      [rows]="zonaTableRows()"
+      [columnCellClasses]="zonaTableColumnClasses"
+      emptyMessage="No hay zonas para mostrar."
+      [badgeColumn]="{ index: 3, successWhen: 'Activa' }"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="zonaTableActionsForRow"
+      [actionsRowData]="zonasForTableActions()"
+      (actionClick)="onZonaTableAction($event)"
+    />
+  </div>
+</section>
+
+@if (zonaFormModal(); as ctx) {
+  <app-create-zona-modal
+    [context]="ctx"
+    (cancelled)="closeZonaFormModal()"
+    (saved)="onZonaSaved()"
+  />
+}
+
+@if (zonaPendingConfirm(); as cctx) {
+  <app-confirm-dialog
+    [title]="cctx.mode === 'deshabilitar' ? '¿Deshabilitar zona?' : '¿Habilitar zona?'"
+    [message]="
+      (cctx.mode === 'deshabilitar'
+        ? '¿Desea deshabilitar la zona «'
+        : '¿Desea habilitar la zona «') +
+      cctx.zona.nombre.trim() +
+      '»?'
+    "
+    [confirmButtonColor]="cctx.mode === 'deshabilitar' ? 'error' : 'primary'"
+    (cancelled)="cancelZonaConfirm()"
+    (confirmed)="confirmZonaEstado()"
+  />
+}
