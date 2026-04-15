@@ -32,6 +32,11 @@ export const ADMIN_ROUTES: Routes = [
             (m) => m.TiposIncidenciasPage,
           ),
       },
+      {
+        path: 'zonas',
+        loadComponent: () =>
+          import('../zonas/pages/zonas/zonas.component').then((m) => m.ZonasPage),
+      },
 
     ]
   }

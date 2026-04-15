@@ -49,6 +49,13 @@ export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
     label: 'Tipos de incidencia',
     routerLink: '/admin/tiposIncidencias',
   },
+  {
+    kind: 'link',
+    id: 'adm-zonas',
+    iconClass: 'ri-map-pin-line',
+    label: 'Zonas',
+    routerLink: '/admin/zonas',
+  },
 ];
 
 export function resolveSidebarByRoles(
