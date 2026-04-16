@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 /* Temas habilitados: solo estos se compilan. Debe coincidir con data-theme en index.html (o quitar data-theme y usa --default). */
 @plugin "daisyui" {

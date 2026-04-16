@@ -56,6 +56,13 @@ export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
     label: 'Zonas',
     routerLink: '/admin/zonas',
   },
+  {
+    kind: 'link',
+    id: 'adm-puntos-rutas',
+    iconClass: 'ri-route-line',
+    label: 'Puntos de recolección',
+    routerLink: '/admin/puntosRecoleccion',
+  },
 ];
 
 export function resolveSidebarByRoles(

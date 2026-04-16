@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.map-point-picker__canvas {
+  width: 100%;
+  z-index: 0;
+}
+
+:host ::ng-deep .leaflet-container {
+  font-family: inherit;
+  border-radius: 0.5rem;
+}
