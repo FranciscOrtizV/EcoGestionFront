@@ -60,8 +60,8 @@ export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
     kind: 'link',
     id: 'adm-puntos-rutas',
     iconClass: 'ri-route-line',
-    label: 'Puntos de ruta',
-    routerLink: '/admin/puntosRutas',
+    label: 'Puntos de recolección',
+    routerLink: '/admin/puntosRecoleccion',
   },
 ];
 

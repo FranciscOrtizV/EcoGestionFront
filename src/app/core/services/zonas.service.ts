@@ -38,8 +38,8 @@ export class ZonasService {
       .pipe(map((res) => this.mapZonaDto(unwrapApiData(res))));
   }
 
-  findAll(): Observable<ZonaRow[]> {
-    return this.http.get<ApiResponse<ZonaApiDto[]>>(`${environment.apiUrl}/zonas`).pipe(
+  findAll(incluirInactivos: boolean = false): Observable<ZonaRow[]> {
+    return this.http.get<ApiResponse<ZonaApiDto[]>>(`${environment.apiUrl}/zonas${ incluirInactivos ? '?incluirInactivos=true' : ''}`).pipe(
       map((res) => unwrapApiData(res).map((dto) => this.mapZonaDto(dto))),
     );
   }

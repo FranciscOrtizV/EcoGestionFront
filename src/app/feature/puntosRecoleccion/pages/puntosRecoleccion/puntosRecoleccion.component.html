@@ -1,0 +1,83 @@
+<section class="w-full max-w-full">
+  <h3 class="mb-2 text-2xl font-semibold text-base-content">Puntos de recolección</h3>
+  <p class="mb-4 text-sm leading-relaxed text-base-content/70">
+    Gestión de puntos de recolección: zonas, dirección, tipo y ubicación en mapa.
+  </p>
+
+  <div class="flex w-full flex-row flex-wrap gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Puntos totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Puntos activos"
+      [value]="statActivos()"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Puntos inactivos"
+      [value]="statInactivos()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="rounded-box mt-6 w-full bg-base-100 p-4 shadow">
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Listado</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateModal()">
+        <span class="ri-add-line" aria-hidden="true"></span>
+        Crear punto
+      </button>
+    </div>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por nombre, zona, dirección, tipo o estado…"
+      searchInputId="puntos-recoleccion-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="0"
+      [headers]="puntoTableHeaders"
+      [rows]="puntoTableRows()"
+      [columnCellClasses]="puntoTableColumnClasses"
+      emptyMessage="No hay puntos de recolección para mostrar."
+      [badgeColumn]="{ index: 4, successWhen: 'Activa' }"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="puntoTableActionsForRow"
+      [actionsRowData]="puntosForTableActions()"
+      (actionClick)="onPuntoTableAction($event)"
+    />
+  </div>
+</section>
+
+@if (puntoFormModal(); as ctx) {
+  <app-create-punto-recoleccion-modal
+    [context]="ctx"
+    (cancelled)="closePuntoFormModal()"
+    (saved)="onPuntoSaved()"
+  />
+}
+
+@if (puntoPendingConfirm(); as cctx) {
+  <app-confirm-dialog
+    [title]="cctx.mode === 'deshabilitar' ? '¿Deshabilitar punto?' : '¿Habilitar punto?'"
+    [message]="
+      (cctx.mode === 'deshabilitar'
+        ? '¿Desea deshabilitar el punto «'
+        : '¿Desea habilitar el punto «') +
+      cctx.punto.nombre.trim() +
+      '»?'
+    "
+    [confirmButtonColor]="cctx.mode === 'deshabilitar' ? 'error' : 'primary'"
+    (cancelled)="cancelPuntoConfirm()"
+    (confirmed)="confirmPuntoEstado()"
+  />
+}

@@ -90,7 +90,7 @@ export class ZonasPage implements OnInit {
   cargarZonas(): void {
     this.loadingService.setLoading(true);
     this.zonasService
-      .findAll()
+      .findAll(true)
       .pipe(
         catchError(() => {
           toast.error('No se pudo cargar el listado de zonas.');
