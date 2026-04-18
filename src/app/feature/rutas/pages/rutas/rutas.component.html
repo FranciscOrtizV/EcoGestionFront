@@ -31,6 +31,10 @@
   <div class="rounded-box mt-6 w-full bg-base-100 p-4 shadow">
     <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h4 class="text-lg font-semibold text-base-content">Listado</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateModal()">
+        <span class="ri-add-line" aria-hidden="true"></span>
+        Crear ruta
+      </button>
     </div>
 
     <app-data-table
@@ -44,8 +48,42 @@
       [headers]="rutaTableHeaders"
       [rows]="rutaTableRows()"
       [columnCellClasses]="rutaTableColumnClasses"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="rutaTableActionsForRow"
+      [actionsRowData]="rutasForTableActions()"
+      (actionClick)="onRutaTableAction($event)"
       emptyMessage="No hay rutas para mostrar."
       [badgeColumn]="{ index: 6, successWhen: 'Activa' }"
     />
   </div>
 </section>
+
+@if (createModalOpen()) {
+  <app-create-ruta-modal (cancelled)="closeCreateModal()" (saved)="onRutaCreated()" />
+}
+@if (viewingRutaId() !== null) {
+  <app-ver-ruta-detalle-modal [rutaId]="viewingRutaId()!" (closed)="closeVerDetalleModal()" />
+}
+@if (editingRutaId() !== null) {
+  <app-create-ruta-modal
+    [rutaId]="editingRutaId()!"
+    (cancelled)="closeEditModal()"
+    (saved)="onRutaUpdated()"
+  />
+}
+
+@if (rutaPendingConfirm(); as cctx) {
+  <app-confirm-dialog
+    [title]="cctx.mode === 'deshabilitar' ? '¿Deshabilitar ruta?' : '¿Rehabilitar ruta?'"
+    [message]="
+      (cctx.mode === 'deshabilitar'
+        ? '¿Desea deshabilitar la ruta «'
+        : '¿Desea rehabilitar la ruta «') +
+      cctx.ruta.nombre.trim() +
+      '»?'
+    "
+    [confirmButtonColor]="cctx.mode === 'deshabilitar' ? 'error' : 'primary'"
+    (cancelled)="cancelRutaConfirm()"
+    (confirmed)="confirmRutaEstado()"
+  />
+}

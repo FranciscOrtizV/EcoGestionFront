@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+:host.map-puntos-lista--fill {
+  height: 100%;
+  min-height: 0;
+}
+
+.map-puntos-lista__canvas {
+  width: 100%;
+  z-index: 0;
+}
+
+.map-puntos-lista__canvas--fill {
+  height: 100%;
+}
+
+:host.map-puntos-lista--fill ::ng-deep .leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+:host ::ng-deep .leaflet-container {
+  font-family: inherit;
+  border-radius: 0.5rem;
+}
+
+:host ::ng-deep .map-puntos-lista__marker-wrap {
+  background: transparent;
+  border: none;
+}
+
+:host ::ng-deep .map-puntos-lista__marker-pin {
+  display: flex;
+  height: 30px;
+  width: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  background-color: #2563eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+:host ::ng-deep .map-puntos-lista__popup-sub {
+  font-size: 12px;
+  opacity: 0.9;
+}

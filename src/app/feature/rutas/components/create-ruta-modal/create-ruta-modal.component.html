@@ -1,0 +1,331 @@
+<div class="modal modal-open z-200" role="dialog" aria-modal="true" aria-labelledby="app-create-ruta-modal-title">
+  <div
+    class="modal-box relative z-10 flex max-h-[92vh] w-[min(96vw,720px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="shrink-0 border-b border-base-300 px-6 pb-3 pt-6">
+      <h3 id="app-create-ruta-modal-title" class="text-lg font-bold">
+        {{ isEditMode() ? 'Editar ruta' : 'Nueva ruta' }}
+      </h3>
+      @if (step() === 1) {
+        <p class="pt-2 text-sm text-base-content/70">
+          Paso 1 de 3: datos generales. Cuando esté todo correcto, continúa para elegir las paradas.
+        </p>
+      } @else if (step() === 2) {
+        <p class="pt-2 text-sm text-base-content/70">
+          Paso 2 de 3: elige los puntos de recolección y el orden de visita. Luego revisarás un resumen antes de guardar.
+        </p>
+      } @else {
+        <p class="pt-2 text-sm text-base-content/70">
+          Paso 3 de 3: confirma los datos y las paradas. Al pulsar «{{ isEditMode() ? 'Confirmar y guardar' : 'Confirmar y crear' }}» se
+          enviará la solicitud al servidor.
+        </p>
+      }
+      <div class="mt-4 flex w-full max-w-lg gap-1.5" role="status" aria-label="Progreso">
+        <div
+          class="h-2 flex-1 rounded-full transition-colors"
+          [ngClass]="step() >= 1 ? 'bg-primary' : 'bg-base-300'"
+        ></div>
+        <div
+          class="h-2 flex-1 rounded-full transition-colors"
+          [ngClass]="step() >= 2 ? 'bg-primary' : 'bg-base-300'"
+        ></div>
+        <div
+          class="h-2 flex-1 rounded-full transition-colors"
+          [ngClass]="step() >= 3 ? 'bg-primary' : 'bg-base-300'"
+        ></div>
+      </div>
+      <p class="mt-2 text-xs text-base-content/50">Datos · Paradas · Confirmación</p>
+    </div>
+
+    @if (editInitialLoading()) {
+      <div class="flex flex-col items-center justify-center gap-3 px-6 py-16">
+        <span class="loading loading-spinner loading-lg text-primary" aria-hidden="true"></span>
+        <p class="text-sm text-base-content/70">Cargando datos de la ruta…</p>
+      </div>
+      <div class="modal-action shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+        <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+      </div>
+    } @else if (step() === 1) {
+      <form novalidate class="flex min-h-0 flex-1 flex-col" [formGroup]="form" (ngSubmit)="$event.preventDefault()">
+        <div class="flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto px-6 py-5">
+          <div>
+            <label for="cr-nombre" class="mb-1 block text-sm text-base-content/80">Nombre *</label>
+            <input
+              id="cr-nombre"
+              type="text"
+              formControlName="nombre"
+              autocomplete="off"
+              maxlength="150"
+              class="input input-bordered w-full bg-base-100"
+              [ngClass]="fieldInvalid('nombre') ? 'input-error' : ''"
+            />
+            @if (fieldInvalid('nombre') && form.controls.nombre.hasError('required')) {
+              <p class="mt-1 text-sm text-error">El nombre es obligatorio.</p>
+            }
+            @if (fieldInvalid('nombre') && form.controls.nombre.hasError('maxlength')) {
+              <p class="mt-1 text-sm text-error">Máximo 150 caracteres.</p>
+            }
+          </div>
+
+          <div>
+            <label for="cr-codigo" class="mb-1 block text-sm text-base-content/80">Código</label>
+            <input
+              id="cr-codigo"
+              type="text"
+              formControlName="codigo"
+              autocomplete="off"
+              maxlength="50"
+              class="input input-bordered w-full bg-base-100 font-mono text-sm"
+              [ngClass]="fieldInvalid('codigo') ? 'input-error' : ''"
+              placeholder="Ej.: RC-01"
+            />
+            @if (fieldInvalid('codigo') && form.controls.codigo.hasError('maxlength')) {
+              <p class="mt-1 text-sm text-error">Máximo 50 caracteres.</p>
+            }
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-start sm:gap-4">
+            <div class="min-w-0">
+              <label for="cr-tipo" class="mb-1 block text-sm text-base-content/80">Tipo de ruta</label>
+              <select
+                id="cr-tipo"
+                formControlName="tipoRuta"
+                class="select select-bordered w-full bg-base-100"
+                [ngClass]="fieldInvalid('tipoRuta') ? 'select-error' : ''"
+              >
+                <option value="">Sin especificar</option>
+                @for (opt of tipoRutaOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+              @if (fieldInvalid('tipoRuta') && form.controls.tipoRuta.hasError('maxlength')) {
+                <p class="mt-1 text-sm text-error">Máximo 100 caracteres.</p>
+              }
+            </div>
+
+            <div class="min-w-0">
+              <label for="cr-duracion" class="mb-1 block text-sm text-base-content/80">
+                Duración estimada (min)
+              </label>
+              <input
+                id="cr-duracion"
+                type="number"
+                formControlName="estimacionDuracionMinutos"
+                min="0"
+                step="1"
+                class="input input-bordered w-full bg-base-100"
+                [ngClass]="fieldInvalid('estimacionDuracionMinutos') ? 'input-error' : ''"
+                placeholder="Opcional"
+              />
+              @if (fieldInvalid('estimacionDuracionMinutos') && form.controls.estimacionDuracionMinutos.hasError('nonNegInt')) {
+                <p class="mt-1 text-sm text-error">Indica un entero mayor o igual que 0.</p>
+              }
+            </div>
+          </div>
+
+          <div class="flex min-h-0 flex-1 flex-col">
+            <div class="mb-1 flex items-center justify-between gap-2">
+              <label for="cr-descripcion" class="text-sm text-base-content/80">Descripción</label>
+              <span class="text-xs text-base-content/50">
+                {{ (form.controls.descripcion.value ?? '').length }} / 5000
+              </span>
+            </div>
+            <textarea
+              id="cr-descripcion"
+              formControlName="descripcion"
+              rows="6"
+              maxlength="5000"
+              class="textarea textarea-bordered min-h-[8rem] w-full resize-y bg-base-100 leading-relaxed"
+              [ngClass]="fieldInvalid('descripcion') ? 'textarea-error' : ''"
+              placeholder="Detalle opcional de la ruta, restricciones, notas para conductores…"
+            ></textarea>
+            @if (fieldInvalid('descripcion') && form.controls.descripcion.hasError('maxlength')) {
+              <p class="mt-1 text-sm text-error">Máximo 5000 caracteres.</p>
+            }
+          </div>
+        </div>
+
+        <div class="modal-action shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+          <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="goToStep2()">Siguiente: paradas</button>
+        </div>
+      </form>
+    } @else if (step() === 2) {
+      <div class="flex min-h-0 flex-1 flex-col">
+        <div class="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-5 lg:flex-row">
+          <div class="flex min-h-0 min-w-0 flex-1 flex-col lg:max-w-[55%]">
+            <h4 class="mb-1 text-sm font-semibold text-base-content">Puntos disponibles</h4>
+            <p class="mb-3 text-xs text-base-content/60">
+              @if (isEditMode()) {
+                Puntos activos y los ya asignados a esta ruta (aunque estén inactivos). Marca los que formarán parte del recorrido.
+              } @else {
+                Solo puntos activos. Marca los que formarán parte de la ruta.
+              }
+            </p>
+            <ul
+              class="divide-y divide-base-200 overflow-y-auto rounded-box border border-base-300 bg-base-100"
+              style="max-height: min(48vh, 420px)"
+            >
+              @for (p of puntosDisponibles(); track p.id) {
+                <li class="flex items-start gap-3 px-3 py-2.5 hover:bg-base-200/60">
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-sm checkbox-primary mt-0.5 shrink-0"
+                    [id]="'cr-punto-' + p.id"
+                    [checked]="isPuntoSelected(p.id)"
+                    (change)="togglePunto(p.id)"
+                  />
+                  <label [for]="'cr-punto-' + p.id" class="min-w-0 flex-1 cursor-pointer text-sm leading-snug">
+                    <span class="font-medium text-base-content">{{ p.nombre }}</span>
+                    <span class="mt-0.5 block text-xs text-base-content/60">{{ p.zonaNombre }} · {{ p.direccion }}</span>
+                  </label>
+                </li>
+              } @empty {
+                <li class="px-4 py-8 text-center text-sm text-base-content/60">No hay puntos activos disponibles.</li>
+              }
+            </ul>
+          </div>
+
+          <div class="flex min-h-0 min-w-0 flex-1 flex-col border-t border-base-300 pt-5 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+            <h4 class="mb-1 text-sm font-semibold text-base-content">Orden de visita</h4>
+            <p class="mb-3 text-xs text-base-content/60">
+              1 = primera parada. Usa las flechas para ajustar el orden ({{ selectedCount() }} seleccionados).
+            </p>
+            <ol
+              class="space-y-2 overflow-y-auto rounded-box border border-base-300 bg-base-100 p-2"
+              style="max-height: min(48vh, 420px)"
+            >
+              @for (p of selectedPuntosOrdenados(); track p.id; let i = $index) {
+                <li
+                  class="flex items-center gap-2 rounded-lg border border-base-200 bg-base-100 px-2 py-2 text-sm shadow-sm"
+                >
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">
+                    {{ i + 1 }}
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="truncate font-medium">{{ p.nombre }}</div>
+                    <div class="truncate text-xs text-base-content/60">{{ p.zonaNombre }}</div>
+                  </div>
+                  <div class="join join-vertical shrink-0 sm:join-horizontal">
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-xs join-item"
+                      [disabled]="i === 0"
+                      (click)="movePuntoInOrder(i, -1)"
+                      title="Subir"
+                      aria-label="Subir en el orden"
+                    >
+                      <span class="ri-arrow-up-line" aria-hidden="true"></span>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-xs join-item"
+                      [disabled]="i === selectedCount() - 1"
+                      (click)="movePuntoInOrder(i, 1)"
+                      title="Bajar"
+                      aria-label="Bajar en el orden"
+                    >
+                      <span class="ri-arrow-down-line" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </li>
+              } @empty {
+                <li class="px-3 py-8 text-center text-sm text-base-content/60">
+                  Marca puntos en la lista de la izquierda para definir el recorrido.
+                </li>
+              }
+            </ol>
+          </div>
+        </div>
+
+        <div class="modal-action shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+          <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+          <button type="button" class="btn btn-outline" (click)="backToStep1()">Atrás</button>
+          <button type="button" class="btn btn-primary" (click)="goToStep3()">Siguiente: confirmar</button>
+        </div>
+      </div>
+    } @else {
+      <div class="flex min-h-0 flex-1 flex-col">
+        <div class="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-5">
+          <section class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
+            <h4 class="mb-3 text-sm font-semibold text-base-content">Datos de la ruta</h4>
+            <dl class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-[minmax(8rem,auto)_1fr] sm:gap-x-4 sm:gap-y-2">
+              <dt class="text-base-content/60">Nombre</dt>
+              <dd class="min-w-0 font-medium text-base-content">{{ form.controls.nombre.value }}</dd>
+              <dt class="text-base-content/60">Código</dt>
+              <dd class="min-w-0 font-mono text-xs text-base-content">{{ textoCodigoResumen() }}</dd>
+              <dt class="text-base-content/60">Tipo</dt>
+              <dd class="text-base-content">{{ labelTipoRuta(form.controls.tipoRuta.value) }}</dd>
+              <dt class="text-base-content/60">Duración estimada</dt>
+              <dd class="text-base-content">{{ textoDuracionResumen() }}</dd>
+              <dt class="self-start pt-0.5 text-base-content/60">Descripción</dt>
+              <dd class="min-w-0 whitespace-pre-wrap break-words text-base-content/90">{{ textoDescripcionResumen() }}</dd>
+            </dl>
+          </section>
+
+          <section class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
+            <h4 class="mb-1 text-sm font-semibold text-base-content">Paradas (orden de visita)</h4>
+            <p class="mb-3 text-xs text-base-content/60">Se enviarán al servidor en este orden.</p>
+            @if (selectedCount() === 0) {
+              <p class="text-sm text-base-content/70">
+                No hay paradas seleccionadas
+                @if (isEditMode()) {
+                  (se quitarán todas las paradas de la ruta).
+                } @else {
+                  (la ruta se creará sin puntos).
+                }
+              </p>
+            } @else {
+              <ol class="space-y-2">
+                @for (p of selectedPuntosOrdenados(); track p.id; let i = $index) {
+                  <li class="flex gap-3 rounded-lg border border-base-200 bg-base-200/40 px-3 py-2.5 text-sm">
+                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">
+                      {{ i + 1 }}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-medium text-base-content">{{ p.nombre }}</div>
+                      <div class="text-xs text-base-content/65">{{ p.zonaNombre }}</div>
+                      <div class="mt-0.5 text-xs text-base-content/55">{{ p.direccion }}</div>
+                    </div>
+                  </li>
+                }
+              </ol>
+            }
+          </section>
+
+          @if (selectedCount() > 0) {
+            <section class="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
+              <h4 class="mb-2 text-sm font-semibold text-base-content">Vista en mapa</h4>
+              <p class="mb-3 text-xs text-base-content/60">
+                Recorrido según el orden de visita (línea azul entre paradas).
+              </p>
+              <div class="overflow-hidden rounded-box border border-base-200 bg-base-200/30">
+                <app-map-puntos-lista
+                  [puntos]="puntosParaMapa()"
+                  [mostrarRecorrido]="true"
+                  [minHeightPx]="268"
+                  ariaLabel="Mapa del recorrido con las paradas seleccionadas"
+                />
+              </div>
+            </section>
+          }
+        </div>
+
+        <div class="modal-action shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+          <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+          <button type="button" class="btn btn-outline" (click)="backToStep2()">Atrás</button>
+          <button type="button" class="btn btn-primary" (click)="confirmarYCrear()">
+            {{ isEditMode() ? 'Confirmar y guardar' : 'Confirmar y crear' }}
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar"
+  ></button>
+</div>
