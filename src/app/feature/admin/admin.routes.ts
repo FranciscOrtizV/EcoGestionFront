@@ -42,6 +42,11 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('../puntosRecoleccion/pages/puntosRecoleccion/puntosRecoleccion.component').then((m) => m.PuntosRecoleccionPage),
       },
+      {
+        path: 'rutas',
+        loadComponent: () =>
+          import('../rutas/pages/rutas/rutas.component').then((m) => m.RutasPage),
+      },
 
     ]
   }
