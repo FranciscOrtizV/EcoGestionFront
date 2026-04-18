@@ -1,0 +1,153 @@
+<div class="modal modal-open z-200" role="dialog" aria-modal="true" aria-labelledby="ver-ruta-detalle-title">
+  <div
+    class="modal-box relative z-10 flex min-h-0 max-h-[92vh] w-[min(96vw,1120px)] max-w-none flex-col overflow-hidden p-0"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="shrink-0 border-b border-base-300 bg-base-100 px-5 py-4 sm:px-6">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h3 id="ver-ruta-detalle-title" class="text-lg font-bold text-base-content">Detalle de la ruta</h3>
+          @if (!loading() && !loadError() && ruta(); as rr) {
+            <p class="mt-1 truncate text-sm font-medium text-base-content">{{ rr.nombre }}</p>
+            <p class="mt-0.5 font-mono text-xs text-base-content/60">{{ rr.codigo || 'Sin código' }}</p>
+          }
+        </div>
+        <button
+          type="button"
+          class="btn btn-sm btn-circle btn-ghost shrink-0"
+          (click)="onClose()"
+          aria-label="Cerrar"
+        >
+          <span class="ri-close-line text-xl" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="flex flex-col items-center justify-center gap-3 px-6 py-20">
+        <span class="loading loading-spinner loading-lg text-primary" aria-hidden="true"></span>
+        <p class="text-sm text-base-content/70">Cargando información…</p>
+      </div>
+    } @else if (loadError() || !ruta()) {
+      <div class="px-6 py-12 text-center">
+        <p class="text-sm text-base-content/70">No fue posible mostrar esta ruta.</p>
+        <button type="button" class="btn btn-primary btn-sm mt-4" (click)="onClose()">Cerrar</button>
+      </div>
+    } @else {
+      @let rr = ruta()!;
+      <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div class="flex min-h-0 flex-1 flex-col lg:flex-row lg:items-stretch">
+        <!-- Columna izquierda: datos + paradas -->
+        <div
+          class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto border-base-300 p-5 sm:p-6 lg:max-w-[52%] lg:border-r"
+        >
+          <section class="rounded-box border border-base-300 bg-base-200/20 p-4 shadow-sm">
+            <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-base-content/80">
+              Datos generales
+            </h4>
+            <dl class="grid grid-cols-1 gap-x-4 gap-y-2.5 text-sm sm:grid-cols-[minmax(7rem,auto)_1fr]">
+              <dt class="text-base-content/55">Estado</dt>
+              <dd>
+                <span
+                  class="badge badge-sm"
+                  [ngClass]="rr.isActive ? 'badge-success' : 'badge-ghost'"
+                >
+                  {{ rr.isActive ? 'Activa' : 'Inactiva' }}
+                </span>
+              </dd>
+              <dt class="text-base-content/55">Tipo</dt>
+              <dd class="text-base-content">{{ labelTipoRuta(rr.tipoRuta) }}</dd>
+              <dt class="text-base-content/55">Duración estimada</dt>
+              <dd class="text-base-content">{{ textoDuracion(rr.estimacionDuracionMinutos) }}</dd>
+              <dt class="self-start pt-0.5 text-base-content/55">Descripción</dt>
+              <dd class="min-w-0 whitespace-pre-wrap break-words text-base-content/90">
+                {{ (rr.descripcion ?? '').trim() || '—' }}
+              </dd>
+              <dt class="text-base-content/55">Creada</dt>
+              <dd class="text-base-content/90">{{ formatFecha(rr.createdAt) }}</dd>
+              <dt class="text-base-content/55">Actualizada</dt>
+              <dd class="text-base-content/90">{{ formatFecha(rr.updatedAt) }}</dd>
+            </dl>
+          </section>
+
+          <section class="min-h-0 flex flex-1 flex-col rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
+            <div class="mb-3 flex flex-wrap items-end justify-between gap-2">
+              <h4 class="text-sm font-semibold uppercase tracking-wide text-base-content/80">
+                Paradas (orden de visita)
+              </h4>
+              <span class="text-xs text-base-content/50">{{ paradasVista().length }} en total</span>
+            </div>
+            @if (paradasVista().length === 0) {
+              <p class="text-sm text-base-content/65">Esta ruta no tiene paradas definidas.</p>
+            } @else {
+              <ol class="space-y-2 overflow-y-auto pr-0.5" style="max-height: min(42vh, 380px)">
+                @for (p of paradasVista(); track p.puntoRecoleccionId + '-' + p.orden) {
+                  <li
+                    class="flex gap-3 rounded-lg border border-base-200 bg-base-200/30 px-3 py-3 text-sm"
+                    [ngClass]="p.datosIncompletos ? 'border-amber-500/50 bg-amber-500/10' : ''"
+                  >
+                    <span
+                      class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary"
+                    >
+                      {{ p.orden }}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                      <div class="font-medium text-base-content">{{ p.nombre }}</div>
+                      <div class="text-xs text-base-content/65">{{ p.zonaNombre }}</div>
+                      <div class="mt-0.5 text-xs text-base-content/55">{{ p.direccion }}</div>
+                      @if (p.estimacionParadaMinutos !== undefined && p.estimacionParadaMinutos !== null) {
+                        <div class="mt-1.5 text-xs text-base-content/50">
+                          Estimación en parada: {{ p.estimacionParadaMinutos }} min
+                        </div>
+                      }
+                    </div>
+                  </li>
+                }
+              </ol>
+            }
+          </section>
+        </div>
+
+        <!-- Columna derecha: mapa (se estira a la altura de la columna izquierda en escritorio) -->
+        <div
+          class="flex min-h-0 flex-1 flex-col border-t border-base-300 bg-base-100 p-4 sm:p-5 max-lg:min-h-[min(42vh,300px)] lg:w-[48%] lg:border-t-0"
+        >
+          <div class="shrink-0">
+            <h4 class="mb-2 text-sm font-semibold uppercase tracking-wide text-base-content/80">
+              Mapa del recorrido
+            </h4>
+            <p class="mb-3 text-xs text-base-content/55">
+              @if (marcadoresMapa().length >= 2) {
+                Línea entre paradas según el orden de visita.
+              } @else if (marcadoresMapa().length === 1) {
+                Ubicación de la única parada.
+              } @else {
+                Sin coordenadas para mostrar en el mapa.
+              }
+            </p>
+          </div>
+          <div
+            class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-200 bg-base-200/20"
+          >
+            <app-map-puntos-lista
+              class="block h-full min-h-0 w-full"
+              [puntos]="marcadoresMapa()"
+              [mostrarRecorrido]="marcadoresMapa().length >= 2"
+              [minHeightPx]="220"
+              [fillHeight]="true"
+              ariaLabel="Mapa del recorrido de la ruta"
+            />
+          </div>
+        </div>
+        </div>
+
+        <footer class="shrink-0 border-t border-base-300 bg-base-100 px-5 py-3 sm:px-6">
+          <div class="flex justify-end">
+            <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="onClose()">Cerrar</button>
+          </div>
+        </footer>
+      </div>
+    }
+  </div>
+  <button type="button" class="modal-backdrop bg-base-content/30" (click)="onClose()" aria-label="Cerrar"></button>
+</div>

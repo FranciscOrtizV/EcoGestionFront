@@ -58,10 +58,17 @@ export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
   },
   {
     kind: 'link',
-    id: 'adm-puntos-rutas',
-    iconClass: 'ri-route-line',
+    id: 'adm-puntos-recoleccion',
+    iconClass: 'ri-map-pin-add-line',
     label: 'Puntos de recolección',
     routerLink: '/admin/puntosRecoleccion',
+  },
+  {
+    kind: 'link',
+    id: 'adm-rutas',
+    iconClass: 'ri-road-map-line',
+    label: 'Rutas',
+    routerLink: '/admin/rutas',
   },
 ];
 

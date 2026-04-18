@@ -1,0 +1,89 @@
+<section class="w-full max-w-full">
+  <h3 class="mb-2 text-2xl font-semibold text-base-content">Rutas</h3>
+  <p class="mb-4 text-sm leading-relaxed text-base-content/70">
+    Administración de rutas de recolección: código, tipo, duración estimada y secuencia de paradas.
+  </p>
+
+  <div class="flex w-full flex-row flex-wrap gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Rutas totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Rutas activas"
+      [value]="statActivas()"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Rutas inactivas"
+      [value]="statInactivas()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="rounded-box mt-6 w-full bg-base-100 p-4 shadow">
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Listado</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateModal()">
+        <span class="ri-add-line" aria-hidden="true"></span>
+        Crear ruta
+      </button>
+    </div>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por código, nombre, tipo, itinerario o estado…"
+      searchInputId="rutas-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="0"
+      [headers]="rutaTableHeaders"
+      [rows]="rutaTableRows()"
+      [columnCellClasses]="rutaTableColumnClasses"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="rutaTableActionsForRow"
+      [actionsRowData]="rutasForTableActions()"
+      (actionClick)="onRutaTableAction($event)"
+      emptyMessage="No hay rutas para mostrar."
+      [badgeColumn]="{ index: 6, successWhen: 'Activa' }"
+    />
+  </div>
+</section>
+
+@if (createModalOpen()) {
+  <app-create-ruta-modal (cancelled)="closeCreateModal()" (saved)="onRutaCreated()" />
+}
+@if (viewingRutaId() !== null) {
+  <app-ver-ruta-detalle-modal [rutaId]="viewingRutaId()!" (closed)="closeVerDetalleModal()" />
+}
+@if (editingRutaId() !== null) {
+  <app-create-ruta-modal
+    [rutaId]="editingRutaId()!"
+    (cancelled)="closeEditModal()"
+    (saved)="onRutaUpdated()"
+  />
+}
+
+@if (rutaPendingConfirm(); as cctx) {
+  <app-confirm-dialog
+    [title]="cctx.mode === 'deshabilitar' ? '¿Deshabilitar ruta?' : '¿Rehabilitar ruta?'"
+    [message]="
+      (cctx.mode === 'deshabilitar'
+        ? '¿Desea deshabilitar la ruta «'
+        : '¿Desea rehabilitar la ruta «') +
+      cctx.ruta.nombre.trim() +
+      '»?'
+    "
+    [confirmButtonColor]="cctx.mode === 'deshabilitar' ? 'error' : 'primary'"
+    (cancelled)="cancelRutaConfirm()"
+    (confirmed)="confirmRutaEstado()"
+  />
+}
