@@ -70,6 +70,13 @@ export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
     label: 'Rutas',
     routerLink: '/admin/rutas',
   },
+  {
+    kind: 'link',
+    id: 'adm-rutas-diarias',
+    iconClass: 'ri-route-line',
+    label: 'Rutas diarias',
+    routerLink: '/admin/rutas-diarias',
+  },
 ];
 
 export function resolveSidebarByRoles(

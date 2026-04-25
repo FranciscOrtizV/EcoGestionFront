@@ -47,6 +47,13 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('../rutas/pages/rutas/rutas.component').then((m) => m.RutasPage),
       },
+      {
+        path: 'rutas-diarias',
+        loadComponent: () =>
+          import('../asignacionRutas/pages/rutasDiarias/rutas-diarias.component').then(
+            (m) => m.RutasDiariasPage,
+          ),
+      },
 
     ]
   }

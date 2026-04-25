@@ -1,0 +1,162 @@
+<div
+  class="modal modal-open z-200"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-create-asignacion-ruta-modal-title"
+>
+  <div
+    class="modal-box relative z-10 flex max-h-[92vh] w-[min(96vw,820px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="shrink-0 border-b border-base-300 px-6 pb-3 pt-6">
+      <h3 id="app-create-asignacion-ruta-modal-title" class="text-lg font-bold">
+        {{ isEditMode() ? 'Editar asignación de ruta' : 'Nueva asignación de ruta' }}
+      </h3>
+      <p class="pt-2 text-sm text-base-content/70">
+        {{
+          isEditMode()
+            ? 'Actualiza los datos de la asignación de ruta.'
+            : 'Completa los datos obligatorios para crear una asignación de ruta diaria.'
+        }}
+      </p>
+    </div>
+
+    <form novalidate class="flex min-h-0 flex-1 flex-col" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto px-6 py-5">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label for="car-ruta-id" class="mb-1 block text-sm text-base-content/80">Ruta *</label>
+            <select
+              id="car-ruta-id"
+              formControlName="rutaId"
+              class="select select-bordered w-full bg-base-100"
+              [ngClass]="fieldInvalid('rutaId') ? 'select-error' : ''"
+            >
+              <option value="">Seleccione una ruta</option>
+              @for (ruta of rutasActivas(); track ruta.id) {
+                <option [value]="ruta.id">{{ ruta.codigo }} - {{ ruta.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label for="car-vehiculo-id" class="mb-1 block text-sm text-base-content/80">Vehículo *</label>
+            <select
+              id="car-vehiculo-id"
+              formControlName="vehiculoId"
+              class="select select-bordered w-full bg-base-100"
+              [ngClass]="fieldInvalid('vehiculoId') ? 'select-error' : ''"
+            >
+              <option value="">Seleccione un vehículo</option>
+              @for (vehiculo of vehiculosActivos(); track vehiculo.id) {
+                <option [value]="vehiculo.id">{{ vehiculo.patente }} - {{ vehiculo.marca }} {{ vehiculo.modelo }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label for="car-conductor-id" class="mb-1 block text-sm text-base-content/80">Conductor *</label>
+            <select
+              id="car-conductor-id"
+              formControlName="conductorId"
+              class="select select-bordered w-full bg-base-100"
+              [ngClass]="fieldInvalid('conductorId') ? 'select-error' : ''"
+            >
+              <option value="">Seleccione un conductor</option>
+              @for (user of conductores(); track user.id) {
+                <option [value]="user.id">{{ user.name }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label for="car-supervisor-id" class="mb-1 block text-sm text-base-content/80">Supervisor (opcional)</label>
+            <select
+              id="car-supervisor-id"
+              formControlName="supervisorId"
+              class="select select-bordered w-full bg-base-100"
+            >
+              <option value="">Sin supervisor</option>
+              @for (user of supervisores(); track user.id) {
+                <option [value]="user.id">{{ user.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label for="car-turno" class="mb-1 block text-sm text-base-content/80">Turno *</label>
+            <select
+              id="car-turno"
+              formControlName="turno"
+              class="select select-bordered w-full bg-base-100"
+              [ngClass]="fieldInvalid('turno') ? 'select-error' : ''"
+            >
+              <option value="">Seleccione un turno</option>
+              @for (turno of turnoOptions; track turno) {
+                <option [value]="turno">{{ turno }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label for="car-plan-inicio" class="mb-1 block text-sm text-base-content/80">
+              Planificación inicio (opcional)
+            </label>
+            <input
+              id="car-plan-inicio"
+              type="datetime-local"
+              formControlName="planificacionTiempoInicio"
+              class="input input-bordered w-full bg-base-100"
+            />
+          </div>
+
+          <div>
+            <label for="car-plan-fin" class="mb-1 block text-sm text-base-content/80">
+              Planificación fin (opcional)
+            </label>
+            <input
+              id="car-plan-fin"
+              type="datetime-local"
+              formControlName="planificacionTiempoFin"
+              class="input input-bordered w-full bg-base-100"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-1 flex items-center justify-between gap-2">
+            <label for="car-notas" class="text-sm text-base-content/80">Notas (opcional)</label>
+            <span class="text-xs text-base-content/50">{{ form.controls.notas.value.length }} / 20000</span>
+          </div>
+          <textarea
+            id="car-notas"
+            formControlName="notas"
+            rows="5"
+            maxlength="20000"
+            class="textarea textarea-bordered w-full resize-y bg-base-100 leading-relaxed"
+            [ngClass]="fieldInvalid('notas') ? 'textarea-error' : ''"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-action shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+        <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">
+          {{ isEditMode() ? 'Guardar cambios' : 'Crear asignación' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar"
+  ></button>
+</div>

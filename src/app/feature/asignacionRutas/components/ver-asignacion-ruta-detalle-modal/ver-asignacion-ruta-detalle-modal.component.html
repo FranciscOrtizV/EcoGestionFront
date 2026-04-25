@@ -1,0 +1,84 @@
+<div
+  class="modal modal-open z-200"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-ver-asignacion-ruta-detalle-title"
+>
+  <div
+    class="modal-box relative z-10 flex max-h-[90vh] w-[min(96vw,560px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="shrink-0 border-b border-base-300 px-6 pb-3 pt-6">
+      <h3 id="app-ver-asignacion-ruta-detalle-title" class="text-lg font-bold">
+        Detalle de asignación
+      </h3>
+      <p class="mt-1 text-xs text-base-content/50 font-mono">{{ asignacionId() }}</p>
+    </div>
+
+    @if (loading()) {
+      <div class="flex flex-col items-center justify-center gap-3 px-6 py-16">
+        <span class="loading loading-spinner loading-lg text-primary" aria-hidden="true"></span>
+        <p class="text-sm text-base-content/70">Cargando detalle…</p>
+      </div>
+    } @else if (detalle()) {
+      @let d = detalle()!;
+      <div class="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
+        <dl class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-[minmax(10rem,auto)_1fr] sm:gap-x-4 sm:gap-y-2">
+          <dt class="text-base-content/60">Nombre de la ruta</dt>
+          <dd class="min-w-0 font-medium text-base-content">{{ d.rutaNombre }}</dd>
+
+          <dt class="text-base-content/60">Código</dt>
+          <dd class="min-w-0 font-mono text-xs text-base-content">{{ d.rutaCodigo }}</dd>
+
+          <dt class="text-base-content/60">Planificador</dt>
+          <dd class="min-w-0 text-base-content">{{ d.planificadorNombre }}</dd>
+
+          <dt class="text-base-content/60">Conductor</dt>
+          <dd class="min-w-0 text-base-content">{{ d.conductorNombre }}</dd>
+
+          <dt class="text-base-content/60">Supervisor</dt>
+          <dd class="min-w-0 text-base-content">{{ d.supervisorNombre }}</dd>
+
+          <dt class="text-base-content/60">Estimación en minutos</dt>
+          <dd class="text-base-content">{{ textoEstimacionMinutos(d.estimacionDuracionMinutos) }}</dd>
+
+          <dt class="text-base-content/60">Tiempo de inicio estimado</dt>
+          <dd class="whitespace-nowrap text-base-content">{{ d.planificacionTiempoInicio }}</dd>
+
+          <dt class="text-base-content/60">Tiempo de fin estimado</dt>
+          <dd class="whitespace-nowrap text-base-content">{{ d.planificacionTiempoFin }}</dd>
+
+          <dt class="text-base-content/60">Estado</dt>
+          <dd class="text-base-content">
+            <span class="badge badge-sm badge-ghost">{{ d.estado }}</span>
+          </dd>
+        </dl>
+
+        <div>
+          <span class="mb-1 block text-sm text-base-content/60">Notas</span>
+          <div
+            class="rounded-box border border-base-300 bg-base-200/40 px-3 py-2 text-sm leading-relaxed text-base-content/90 whitespace-pre-wrap"
+            role="region"
+            aria-label="Notas"
+          >
+            {{ d.notas }}
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="px-6 py-10 text-center text-sm text-base-content/60">
+        No fue posible mostrar el detalle.
+      </div>
+    }
+
+    <div class="modal-action shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+      <button type="button" class="btn" (click)="onClose()">Cerrar</button>
+    </div>
+  </div>
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onClose()"
+    aria-label="Cerrar"
+  ></button>
+</div>
