@@ -1,0 +1,11 @@
+@if (loading()) {
+  <div
+    class="fixed inset-0 z-[100] flex cursor-wait items-center justify-center bg-base-content/25 backdrop-blur-[2px]"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+  >
+    <span class="loading loading-infinity loading-xl text-primary" aria-hidden="true"></span>
+    <span class="sr-only">Cargando…</span>
+  </div>
+}

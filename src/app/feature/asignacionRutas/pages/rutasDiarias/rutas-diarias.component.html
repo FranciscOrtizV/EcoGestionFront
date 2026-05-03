@@ -1,0 +1,126 @@
+<section class="w-full max-w-full">
+  <h3 class="mb-2 text-2xl font-semibold text-base-content">Rutas diarias</h3>
+  <p class="mb-4 text-sm leading-relaxed text-base-content/70">
+    Identificación de rutas diarias por rango de fechas.
+  </p>
+
+  <div class="flex w-full flex-row flex-wrap gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Asignaciones totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Completadas"
+      [value]="statCompletadas()"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="En proceso"
+      [value]="statEnProceso()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="rounded-box mt-6 w-full bg-base-100 p-4 shadow">
+    <div class="mb-3 flex items-center justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Listado</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateModal()">
+        <span class="ri-add-line" aria-hidden="true"></span>
+        Nueva asignación
+      </button>
+    </div>
+
+    <form
+      class="mb-4 flex flex-col gap-3 rounded-box border border-base-300 p-3 md:flex-row md:items-end"
+      (ngSubmit)="buscarPorRango()"
+    >
+      <label class="form-control w-full md:max-w-xs">
+        <span class="label-text text-sm text-base-content/80">Fecha inicio</span>
+        <input
+          type="date"
+          class="input input-bordered input-sm w-full"
+          name="fechaInicio"
+          [(ngModel)]="fechaInicio"
+          required
+        />
+      </label>
+
+      <label class="form-control w-full md:max-w-xs">
+        <span class="label-text text-sm text-base-content/80">Fecha fin</span>
+        <input
+          type="date"
+          class="input input-bordered input-sm w-full"
+          name="fechaFin"
+          [(ngModel)]="fechaFin"
+          required
+        />
+      </label>
+
+      <div class="flex gap-2">
+        <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="resetearRangoActual()">
+          Mes actual
+        </button>
+      </div>
+    </form>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por turno, conductor, vehículo, ruta o estado…"
+      searchInputId="rutas-diarias-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="0"
+      [headers]="rutaTableHeaders"
+      [rows]="rutaTableRows()"
+      [columnCellClasses]="rutaTableColumnClasses"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="asignacionTableActionsForRow"
+      [actionsRowData]="asignacionesForTableActions()"
+      (actionClick)="onAsignacionTableAction($event)"
+      emptyMessage="No hay rutas diarias para mostrar."
+      [badgeColumn]="{ index: 1, successWhen: 'COMPLETADO' }"
+    />
+  </div>
+</section>
+
+@if (createModalOpen()) {
+  <app-create-asignacion-ruta-modal
+    (cancelled)="closeCreateModal()"
+    (saved)="onAsignacionCreated()"
+  />
+}
+@if (editingAsignacionId() !== null) {
+  <app-create-asignacion-ruta-modal
+    [asignacionId]="editingAsignacionId()!"
+    (cancelled)="closeEditModal()"
+    (saved)="onAsignacionUpdated()"
+  />
+}
+@if (viewingAsignacionId() !== null) {
+  <app-ver-asignacion-ruta-detalle-modal
+    [asignacionId]="viewingAsignacionId()!"
+    (closed)="closeVerDetalleModal()"
+  />
+}
+@if (asignacionPendingPublicar(); as pub) {
+  <app-confirm-dialog
+    title="¿Publicar planificación?"
+    [message]="
+      'Va a publicar la asignación de la ruta «' +
+      pub.rutaNombre.trim() +
+      '». Una vez publicada, no podrá volver a editar esta planificación. ¿Desea continuar?'
+    "
+    confirmButtonColor="warning"
+    (cancelled)="cancelPublicarConfirm()"
+    (confirmed)="confirmPublicar()"
+  />
+}

@@ -1,0 +1,77 @@
+<section class="w-full max-w-full">
+  <h3 class="text-2xl font-semibold text-base-content mb-2">Gestión de usuarios</h3>
+  <p class="text-base-content/70 text-sm leading-relaxed mb-4">
+    Área de gestión de usuarios. Aquí podrás listar, crear y administrar cuentas.
+  </p>
+
+  <div class="flex w-full flex-row gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Usuarios totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Usuarios activos"
+      [value]="statActivos()"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Usuarios inactivos"
+      [value]="statInactivos()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Usuarios</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateUserModal()">
+        <span class="ri-user-add-line" aria-hidden="true"></span>
+        Crear usuario
+      </button>
+    </div>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por nombre, correo, rol o estado…"
+      searchInputId="users-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="1"
+      [headers]="userTableHeaders"
+      [rows]="userTableRows()"
+      [columnCellClasses]="userTableColumnClasses"
+      emptyMessage="No hay usuarios para mostrar."
+      [badgeColumn]="{ index: 3, successWhen: 'Activo' }"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="userTableActionsForRow"
+      [actionsRowData]="usersForTableActions()"
+      (actionClick)="onUserTableAction($event)"
+    />
+  </div>
+</section>
+
+@if (userFormModal(); as formCtx) {
+  <app-create-user-modal
+    [context]="formCtx"
+    (cancelled)="closeUserFormModal()"
+    (saved)="onUserFormSaved()"
+  />
+}
+
+@if (userPendingAction(); as ctx) {
+  <app-confirm-dialog
+    [title]="ctx.mode === 'desactivar' ? '¿Desactivar usuario?' : '¿Activar usuario?'"
+    [message]="(ctx.mode === 'desactivar' ? '¿Desea desactivar a ' : '¿Desea activar a ') + ctx.user.name + '?'"
+    [confirmButtonColor]="ctx.mode === 'desactivar' ? 'error' : 'primary'"
+    (cancelled)="cancelUserAction()"
+    (confirmed)="confirmUserAction()"
+  />
+}

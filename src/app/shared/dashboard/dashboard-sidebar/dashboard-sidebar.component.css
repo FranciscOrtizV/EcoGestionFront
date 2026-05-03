@@ -1,0 +1,29 @@
+:host {
+  display: contents;
+}
+
+.sidebar-nav-link {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-nav-link:hover {
+  background-color: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+  color: var(--color-base-content);
+}
+
+.sidebar-link-active {
+  background-color: color-mix(in oklch, var(--color-primary) 18%, transparent);
+  color: var(--color-base-content);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.sidebar-link-active:hover {
+  background-color: color-mix(in oklch, var(--color-primary) 26%, transparent);
+  color: var(--color-base-content);
+}
+
+.sidebar-nav-link.sidebar-link-active i,
+.sidebar-nav-link.sidebar-link-active span {
+  color: inherit;
+}

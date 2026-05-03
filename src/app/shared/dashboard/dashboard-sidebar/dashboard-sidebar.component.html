@@ -1,0 +1,89 @@
+<!--sidenav -->
+<div
+  class="fixed left-0 top-0 w-64 h-full bg-base-100 border-r border-base-300/80 p-4 z-50 sidebar-menu transition-transform"
+  [class.-translate-x-full]="!sidebarOpen"
+>
+  <a href="#" class="flex items-center pb-4 border-b border-base-300">
+    <h2 class="font-bold text-2xl text-base-content">
+      ECO <span class="bg-primary text-primary-content px-2 rounded-md">GESTIÓN</span>
+    </h2>
+  </a>
+  <ul class="mt-4">
+    @for (entry of sidebarEntries(); track entry.id) {
+      @switch (entry.kind) {
+        @case ('section') {
+          <span class="text-base-content/50 font-bold">{{ entry.label }}</span>
+        }
+        @case ('link') {
+          <li class="mb-1 group">
+            @if (entry.routerLink) {
+              <a
+                [routerLink]="entry.routerLink"
+                routerLinkActive="sidebar-link-active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="sidebar-nav-link flex font-semibold items-center py-2 px-4 rounded-md text-base-content"
+              >
+                <i [class]="entry.iconClass + ' mr-3 text-lg'"></i>
+                <span class="text-sm">{{ entry.label }}</span>
+                @if (entry.badge) {
+                  <span
+                    class="badge badge-sm ml-auto"
+                    [class.badge-error]="entry.badge.variant === 'red'"
+                    [class.badge-success]="entry.badge.variant === 'green'"
+                    >{{ entry.badge.text }}</span
+                  >
+                }
+              </a>
+            } @else {
+              <a
+                href=""
+                class="sidebar-nav-link flex font-semibold items-center py-2 px-4 rounded-md text-base-content group-[.active]:bg-base-300 group-[.active]:text-base-content group-[.selected]:bg-base-300 group-[.selected]:text-base-content"
+              >
+                <i [class]="entry.iconClass + ' mr-3 text-lg'"></i>
+                <span class="text-sm">{{ entry.label }}</span>
+                @if (entry.badge) {
+                  <span
+                    class="badge badge-sm ml-auto"
+                    [class.badge-error]="entry.badge.variant === 'red'"
+                    [class.badge-success]="entry.badge.variant === 'green'"
+                    >{{ entry.badge.text }}</span
+                  >
+                }
+              </a>
+            }
+          </li>
+        }
+        @case ('dropdown') {
+          <li class="mb-1 group" [class.selected]="selectedSidebarGroup === entry.group">
+            <a
+              href=""
+              class="sidebar-nav-link flex font-semibold items-center py-2 px-4 rounded-md text-base-content group-[.active]:bg-base-300 group-[.active]:text-base-content group-[.selected]:bg-base-300 group-[.selected]:text-base-content sidebar-dropdown-toggle"
+              (click)="onDropdownClick($event, entry.group)"
+            >
+              <i [class]="entry.iconClass + ' mr-3 text-lg'"></i>
+              <span class="text-sm">{{ entry.label }}</span>
+              <i class="ri-arrow-right-s-line ml-auto group-[.selected]:rotate-90"></i>
+            </a>
+            <ul class="pl-7 mt-2 hidden group-[.selected]:block">
+              @for (child of entry.children; track child.label) {
+                <li class="mb-4">
+                  <a
+                    href=""
+                    class="text-base-content text-sm flex items-center hover:text-primary before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-base-300 before:mr-3"
+                    >{{ child.label }}</a
+                  >
+                </li>
+              }
+            </ul>
+          </li>
+        }
+      }
+    }
+  </ul>
+</div>
+<div
+  class="fixed top-0 left-0 w-full h-full bg-base-content/40 z-40 md:hidden sidebar-overlay"
+  [class.hidden]="!sidebarOpen"
+  (click)="onOverlayClick()"
+></div>
+<!-- end sidenav -->

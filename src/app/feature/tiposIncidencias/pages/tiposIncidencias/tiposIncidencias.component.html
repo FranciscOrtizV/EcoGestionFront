@@ -1,0 +1,83 @@
+<section class="w-full max-w-full">
+  <h3 class="text-2xl font-semibold text-base-content mb-2">Tipos de incidencias</h3>
+  <p class="text-base-content/70 text-sm leading-relaxed mb-4">
+    Área de gestión de tipos de incidencias. Aquí podrás listar y administrar los tipos disponibles en el sistema.
+  </p>
+
+  <div class="flex w-full flex-row gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Tipos totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Tipos activos"
+      [value]="statActivos()"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Tipos inactivos"
+      [value]="statInactivos()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Listado</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateTipoModal()">
+        <span class="ri-add-line" aria-hidden="true"></span>
+        Crear tipo
+      </button>
+    </div>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por nombre, descripción o estado…"
+      searchInputId="tipos-incidencias-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="0"
+      [headers]="tipoTableHeaders"
+      [rows]="tipoTableRows()"
+      [columnCellClasses]="tipoTableColumnClasses"
+      emptyMessage="No hay tipos de incidencia para mostrar."
+      [badgeColumn]="{ index: 2, successWhen: 'Activo' }"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="tipoTableActionsForRow"
+      [actionsRowData]="tiposForTableActions()"
+      (actionClick)="onTipoTableAction($event)"
+    />
+  </div>
+</section>
+
+@if (tipoFormModal(); as ctx) {
+  <app-create-tipo-incidencia-modal
+    [context]="ctx"
+    (cancelled)="closeTipoFormModal()"
+    (saved)="onTipoSaved()"
+  />
+}
+
+@if (tipoPendingConfirm(); as cctx) {
+  <app-confirm-dialog
+    [title]="cctx.mode === 'eliminar' ? '¿Eliminar tipo de incidencia?' : '¿Reactivar tipo de incidencia?'"
+    [message]="
+      (cctx.mode === 'eliminar'
+        ? '¿Desea eliminar el tipo «'
+        : '¿Desea reactivar el tipo «') +
+      formatNombreParaTabla(cctx.tipo.nombre) +
+      '»?'
+    "
+    [confirmButtonColor]="cctx.mode === 'eliminar' ? 'error' : 'primary'"
+    (cancelled)="cancelTipoConfirm()"
+    (confirmed)="confirmTipoAction()"
+  />
+}

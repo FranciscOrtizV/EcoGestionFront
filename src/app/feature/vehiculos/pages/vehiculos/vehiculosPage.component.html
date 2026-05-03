@@ -1,0 +1,74 @@
+<section class="w-full max-w-full">
+  <h3 class="text-2xl font-semibold text-base-content mb-2">Gestión de vehículos</h3>
+  <p class="text-base-content/70 text-sm leading-relaxed mb-4">
+    Área de gestión de vehículos. Aquí podrás listar, crear y administrar todos los vehículos del sistema.
+  </p>
+
+  <div class="flex w-full flex-row gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Vehículos totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Vehículos disponibles"
+      [value]="statDisponibles()"
+      cardClass="bg-base-100"
+      valueClass="text-success"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Vehículos en mantención"
+      [value]="statEnMantencion()"
+      cardClass="bg-base-100"
+      valueClass="text-warning"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Vehículos fuera de servicio"
+      [value]="statFueraDeServicio()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
+
+  <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Vehículos</h4>
+      <button type="button" class="btn btn-primary btn-sm sm:btn-md" (click)="openCreateVehiculoModal()">
+        <span class="ri-truck-line" aria-hidden="true"></span>
+        Crear vehículo
+      </button>
+    </div>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por patente, código, marca, modelo o estado…"
+      searchInputId="vehiculos-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="1"
+      [headers]="vehiculoTableHeaders"
+      [rows]="vehiculoTableRows()"
+      [columnCellClasses]="vehiculoTableColumnClasses"
+      emptyMessage="No hay vehículos para mostrar."
+      [badgeColumn]="vehiculoBadgeColumn"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="vehiculoTableActionsForRow"
+      [actionsRowData]="vehiculosForTableActions()"
+      (actionClick)="onUserTableAction($event)"
+    />
+  </div>
+
+  @if (vehiculoFormModal(); as vctx) {
+    <app-create-vehiculo-modal
+      [context]="vctx"
+      (cancelled)="closeVehiculoFormModal()"
+      (saved)="onVehiculoSaved()"
+    />
+  }
+</section>

@@ -1,0 +1,87 @@
+<!-- component -->
+<div class="bg-base-100">
+  <div class="flex justify-center h-screen">
+    <div
+      class="relative hidden self-stretch bg-cover bg-center lg:block lg:min-h-0 lg:w-2/3"
+      style="background-image: url('/images/login-hero.jpg')"
+    >
+      <div class="flex h-full min-h-full items-center px-20 bg-neutral/50">
+        <div>
+          <h2 class="text-4xl font-bold text-neutral-content">Brand</h2>
+
+          <p class="max-w-xl mt-3 text-neutral-content/80">
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit. In autem ipsa, nulla laboriosam dolores,
+            repellendus perferendis libero suscipit nam temporibus molestiae
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center w-full max-w-md px-6 mx-auto lg:w-2/6">
+      <div class="flex-1">
+        <div class="text-center">
+          <h2 class="text-4xl font-bold text-center text-base-content">Brand</h2>
+
+          <p class="mt-3 text-base-content/60">Inicia sesión en tu cuenta</p>
+        </div>
+
+        <div class="mt-8">
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            <div>
+              <label for="email" class="block mb-2 text-sm text-base-content/80">Email</label>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                autocomplete="username"
+                placeholder="ejemplo@gmail.com"
+                class="input input-bordered w-full mt-2 bg-base-100 text-base-content placeholder:text-base-content/40"
+                [ngClass]="emailInvalid ? 'input-error' : ''"
+                [attr.aria-invalid]="emailInvalid"
+                [attr.aria-describedby]="emailInvalid ? 'email-error' : null"
+              />
+              @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+                <p id="email-error" class="mt-1.5 text-sm text-error">El correo es obligatorio.</p>
+              } @else if (form.controls.email.touched && form.controls.email.hasError('minlength')) {
+                <p id="email-error" class="mt-1.5 text-sm text-error">
+                  El correo debe tener al menos 5 caracteres.
+                </p>
+              } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
+                <p id="email-error" class="mt-1.5 text-sm text-error">
+                  Introduce un correo electrónico válido.
+                </p>
+              }
+            </div>
+
+            <div class="mt-6">
+              <div class="flex justify-between mb-2">
+                <label for="password" class="text-sm text-base-content/80">Contraseña</label>
+              </div>
+
+              <input
+                formControlName="password"
+                type="password"
+                id="password"
+                autocomplete="current-password"
+                placeholder="Ingrese su contraseña"
+                class="input input-bordered w-full mt-2 bg-base-100 text-base-content placeholder:text-base-content/40"
+                [ngClass]="passwordInvalid ? 'input-error' : ''"
+                [attr.aria-invalid]="passwordInvalid"
+                [attr.aria-describedby]="passwordInvalid ? 'password-error' : null"
+              />
+              @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+                <p id="password-error" class="mt-1.5 text-sm text-error">
+                  La contraseña es obligatoria.
+                </p>
+              }
+            </div>
+
+            <div class="mt-6">
+              <button id="botonshiet" type="submit" class="btn btn-primary w-full">Iniciar sesión</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
