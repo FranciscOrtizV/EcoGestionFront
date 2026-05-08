@@ -10,4 +10,16 @@ export type AsignacionRutaDetalle = {
   planificacionTiempoFin: string;
   estado: string;
   notas: string;
+  puntosRuta: PuntoRuta[];
+};
+
+type PuntoRuta = {
+  orden_secuencia: number;
+  nombre_punto_recoleccion: string;
+  direccion: string;
+  referencia?: string;
+  latitud: number;
+  longitud: number;
+  tipo_punto: string;
+  prioridad?: number;
 };

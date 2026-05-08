@@ -1,12 +1,17 @@
-import { Component, OnInit, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { toast } from 'ngx-sonner';
 import { catchError, finalize, of } from 'rxjs';
 import { AsignacionRutasService } from '../../../../core/services/asignacion-rutas.service';
+import {
+  MapPuntosListaComponent,
+  type MapaPuntoMarcador,
+} from '../../../../shared/components/map-puntos-lista/map-puntos-lista.component';
 import type { AsignacionRutaDetalle } from '../../types';
 
 @Component({
   selector: 'app-ver-asignacion-ruta-detalle-modal',
   standalone: true,
+  imports: [MapPuntosListaComponent],
   templateUrl: './ver-asignacion-ruta-detalle-modal.component.html',
 })
 export class VerAsignacionRutaDetalleModalComponent implements OnInit {
@@ -18,6 +23,22 @@ export class VerAsignacionRutaDetalleModalComponent implements OnInit {
 
   protected readonly loading = signal(true);
   protected readonly detalle = signal<AsignacionRutaDetalle | null>(null);
+  protected readonly marcadoresMapa = computed<MapaPuntoMarcador[]>(() => {
+    const d = this.detalle();
+
+    if (!d) return [];
+
+    return d.puntosRuta
+      .map((p) => ({
+        lat: Number(p.latitud),
+        lng: Number(p.longitud),
+        orden: p.orden_secuencia,
+        titulo: p.nombre_punto_recoleccion,
+        subtitulo: p.referencia?.trim()
+          ? `${p.tipo_punto} · ${p.direccion} · Ref: ${p.referencia}`
+          : `${p.tipo_punto} · ${p.direccion}`,
+      }));
+  });
 
   ngOnInit(): void {
     this.loading.set(true);

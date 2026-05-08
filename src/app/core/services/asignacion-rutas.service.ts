@@ -46,6 +46,18 @@ interface AsignacionRutaApiDto {
   planificacionTiempoFin?: string | null;
   estado: string;
   notas?: string | null;
+  puntosRuta?: PuntoRutaDetalleApiDto[];
+}
+
+interface PuntoRutaDetalleApiDto {
+  orden_secuencia: number;
+  nombre_punto_recoleccion: string;
+  direccion: string;
+  referencia?: string | null;
+  latitud: number;
+  longitud: number;
+  tipo_punto: string;
+  prioridad?: number | null;
 }
 
 function nombreCompleto(p?: PersonaApiDto | null): string {
@@ -100,6 +112,16 @@ export class AsignacionRutasService {
       planificacionTiempoFin: formatFechaHora(dto.planificacionTiempoFin),
       estado: dto.estado ?? '—',
       notas: (dto.notas ?? '').trim() || '—',
+      puntosRuta: (dto.puntosRuta ?? []).map((p) => ({
+        orden_secuencia: p.orden_secuencia,
+        nombre_punto_recoleccion: p.nombre_punto_recoleccion ?? 'Punto sin nombre',
+        direccion: p.direccion ?? '—',
+        referencia: p.referencia ?? undefined,
+        latitud: p.latitud,
+        longitud: p.longitud,
+        tipo_punto: p.tipo_punto ?? '—',
+        prioridad: p.prioridad ?? undefined,
+      })),
     };
   }
 
