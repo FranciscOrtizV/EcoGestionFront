@@ -5,7 +5,7 @@
   aria-labelledby="app-ver-asignacion-ruta-detalle-title"
 >
   <div
-    class="modal-box relative z-10 flex max-h-[90vh] w-[min(96vw,560px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
+    class="modal-box relative z-10 flex max-h-[90vh] w-[min(96vw,980px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
     (click)="$event.stopPropagation()"
   >
     <div class="shrink-0 border-b border-base-300 px-6 pb-3 pt-6">
@@ -22,48 +22,84 @@
       </div>
     } @else if (detalle()) {
       @let d = detalle()!;
-      <div class="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
-        <dl class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-[minmax(10rem,auto)_1fr] sm:gap-x-4 sm:gap-y-2">
-          <dt class="text-base-content/60">Nombre de la ruta</dt>
-          <dd class="min-w-0 font-medium text-base-content">{{ d.rutaNombre }}</dd>
-
-          <dt class="text-base-content/60">Código</dt>
-          <dd class="min-w-0 font-mono text-xs text-base-content">{{ d.rutaCodigo }}</dd>
-
-          <dt class="text-base-content/60">Planificador</dt>
-          <dd class="min-w-0 text-base-content">{{ d.planificadorNombre }}</dd>
-
-          <dt class="text-base-content/60">Conductor</dt>
-          <dd class="min-w-0 text-base-content">{{ d.conductorNombre }}</dd>
-
-          <dt class="text-base-content/60">Supervisor</dt>
-          <dd class="min-w-0 text-base-content">{{ d.supervisorNombre }}</dd>
-
-          <dt class="text-base-content/60">Estimación en minutos</dt>
-          <dd class="text-base-content">{{ textoEstimacionMinutos(d.estimacionDuracionMinutos) }}</dd>
-
-          <dt class="text-base-content/60">Tiempo de inicio estimado</dt>
-          <dd class="whitespace-nowrap text-base-content">{{ d.planificacionTiempoInicio }}</dd>
-
-          <dt class="text-base-content/60">Tiempo de fin estimado</dt>
-          <dd class="whitespace-nowrap text-base-content">{{ d.planificacionTiempoFin }}</dd>
-
-          <dt class="text-base-content/60">Estado</dt>
-          <dd class="text-base-content">
-            <span class="badge badge-sm badge-ghost">{{ d.estado }}</span>
-          </dd>
-        </dl>
-
-        <div>
-          <span class="mb-1 block text-sm text-base-content/60">Notas</span>
-          <div
-            class="rounded-box border border-base-300 bg-base-200/40 px-3 py-2 text-sm leading-relaxed text-base-content/90 whitespace-pre-wrap"
-            role="region"
-            aria-label="Notas"
+      <div class="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
+        <div
+          class="min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto border-base-300 px-6 py-5 lg:border-r"
+        >
+          <dl
+            class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-[minmax(10rem,auto)_1fr] sm:gap-x-4 sm:gap-y-2"
           >
-            {{ d.notas }}
+            <dt class="text-base-content/60">Nombre de la ruta</dt>
+            <dd class="min-w-0 font-medium text-base-content">{{ d.rutaNombre }}</dd>
+
+            <dt class="text-base-content/60">Código</dt>
+            <dd class="min-w-0 font-mono text-xs text-base-content">{{ d.rutaCodigo }}</dd>
+
+            <dt class="text-base-content/60">Planificador</dt>
+            <dd class="min-w-0 text-base-content">{{ d.planificadorNombre }}</dd>
+
+            <dt class="text-base-content/60">Conductor</dt>
+            <dd class="min-w-0 text-base-content">{{ d.conductorNombre }}</dd>
+
+            <dt class="text-base-content/60">Supervisor</dt>
+            <dd class="min-w-0 text-base-content">{{ d.supervisorNombre }}</dd>
+
+            <dt class="text-base-content/60">Estimación en minutos</dt>
+            <dd class="text-base-content">{{ textoEstimacionMinutos(d.estimacionDuracionMinutos) }}</dd>
+
+            <dt class="text-base-content/60">Tiempo de inicio estimado</dt>
+            <dd class="whitespace-nowrap text-base-content">{{ d.planificacionTiempoInicio }}</dd>
+
+            <dt class="text-base-content/60">Tiempo de fin estimado</dt>
+            <dd class="whitespace-nowrap text-base-content">{{ d.planificacionTiempoFin }}</dd>
+
+            <dt class="text-base-content/60">Estado</dt>
+            <dd class="text-base-content">
+              <span class="badge badge-sm badge-ghost">{{ d.estado }}</span>
+            </dd>
+          </dl>
+
+          <div>
+            <span class="mb-1 block text-sm text-base-content/60">Notas</span>
+            <div
+              class="rounded-box border border-base-300 bg-base-200/40 px-3 py-2 text-sm leading-relaxed text-base-content/90 whitespace-pre-wrap"
+              role="region"
+              aria-label="Notas"
+            >
+              {{ d.notas }}
+            </div>
           </div>
         </div>
+
+        <aside
+          class="flex min-h-[280px] w-full shrink-0 flex-col border-t border-base-300 bg-base-100 lg:min-h-0 lg:w-[min(44%,440px)] lg:max-w-md lg:border-l lg:border-t-0"
+          aria-label="Mapa del recorrido"
+        >
+          <div class="flex min-h-[280px] flex-1 flex-col gap-2 p-4 lg:min-h-0">
+            <h4 class="shrink-0 text-sm font-semibold text-base-content">Mapa de la ruta</h4>
+            @if (marcadoresMapa().length > 0) {
+              <p class="shrink-0 text-xs text-base-content/60">
+                Recorrido según los puntos de la planificación.
+              </p>
+              <div
+                class="relative flex min-h-[240px] flex-1 flex-col overflow-hidden rounded-box border border-base-200 bg-base-200/30 lg:min-h-0"
+              >
+                <app-map-puntos-lista
+                  class="block h-full min-h-[240px] flex-1"
+                  [puntos]="marcadoresMapa()"
+                  [mostrarRecorrido]="true"
+                  [fillHeight]="true"
+                  [minHeightPx]="240"
+                  ariaLabel="Mapa del recorrido planificado"
+                />
+              </div>
+            } @else {
+              <p class="flex flex-1 items-center justify-center rounded-box border border-dashed border-base-300 bg-base-200/20 px-4 py-8 text-center text-sm text-base-content/60">
+                No hay puntos con coordenadas para mostrar el mapa.
+              </p>
+            }
+          </div>
+        </aside>
       </div>
     } @else {
       <div class="px-6 py-10 text-center text-sm text-base-content/60">
