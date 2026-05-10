@@ -6,6 +6,14 @@ export type RutaRow = {
   descripcion: string | null;
   tipoRuta: string;
   estimacionDuracionMinutos: number;
+  estado?: string | null;
+  planificacionTiempoInicio?: string | null;
+  planificacionTiempoFin?: string | null;
+  /** Solo en filas provenientes de asignaciones (p. ej. conductor). */
+  vehiculoModelo?: string | null;
+  vehiculoPatente?: string | null;
+  /** Texto ya formateado, p. ej. "1.400 kg". */
+  vehiculoCapacidadKg?: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

@@ -14,6 +14,11 @@ export const CONDUCTOR_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/inicio/inicio.component').then((m) => m.ConductorInicioComponent),
       },
+      {
+        path: 'mis-rutas',
+        loadComponent: () =>
+          import('./pages/mis-rutas/mis-rutas.component').then((m) => m.ConductorMisRutasComponent),
+      },
     ]
   }
 ];

@@ -1,0 +1,31 @@
+<section class="w-full max-w-full">
+  <h3 class="text-2xl font-semibold text-base-content mb-2">Mis rutas</h3>
+  <p class="text-base-content/70 text-sm leading-relaxed">
+    Aquí podrás consultar las rutas asignadas a tu cuenta.
+  </p>
+
+  @if (loadError()) {
+    <div class="mt-4 rounded-md border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+      Ocurrió un error al cargar tus rutas.
+      <button class="ml-2 underline" type="button" (click)="cargarMisRutas()">Reintentar</button>
+    </div>
+  }
+
+  <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
+    <h4 class="text-lg font-semibold text-base-content mb-3">Listado</h4>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por nombre, código, tipo de ruta, estado, fechas, patente o vehículo…"
+      searchInputId="mis-rutas-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="8"
+      [headers]="rutasTableHeaders"
+      [rows]="rutasTableRows()"
+      [columnCellClasses]="rutasTableColumnClasses"
+      emptyMessage="No hay rutas asignadas para mostrar."
+    />
+  </div>
+</section>

@@ -98,6 +98,7 @@
     (saved)="onAsignacionCreated()"
   />
 }
+
 @if (editingAsignacionId() !== null) {
   <app-create-asignacion-ruta-modal
     [asignacionId]="editingAsignacionId()!"
@@ -105,12 +106,14 @@
     (saved)="onAsignacionUpdated()"
   />
 }
+
 @if (viewingAsignacionId() !== null) {
   <app-ver-asignacion-ruta-detalle-modal
     [asignacionId]="viewingAsignacionId()!"
     (closed)="closeVerDetalleModal()"
   />
 }
+
 @if (asignacionPendingPublicar(); as pub) {
   <app-confirm-dialog
     title="¿Publicar planificación?"

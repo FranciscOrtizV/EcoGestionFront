@@ -16,6 +16,8 @@ interface RutaApiDto {
   id: string;
   nombre: string;
   codigo: string;
+  descripcion?: string | null;
+  tipoRuta?: string;
   estimacionDuracionMinutos?: number;
 }
 
@@ -59,6 +61,14 @@ interface PuntoRutaDetalleApiDto {
   tipo_punto: string;
   prioridad?: number | null;
 }
+
+export type MisRutaRow = {
+  nombre: string;
+  codigo: string;
+  descripcion: string;
+  tipoRuta: string;
+  estimacionDuracionMinutos: number | null;
+};
 
 function nombreCompleto(p?: PersonaApiDto | null): string {
   if (!p) {
@@ -152,6 +162,18 @@ export class AsignacionRutasService {
     };
   }
 
+  private mapMisRuta(dto: AsignacionRutaApiDto): MisRutaRow {
+    const min = dto.ruta?.estimacionDuracionMinutos;
+    return {
+      nombre: dto.ruta?.nombre ?? '—',
+      codigo: dto.ruta?.codigo ?? '—',
+      descripcion: (dto.ruta?.descripcion ?? '').trim() || '—',
+      tipoRuta: (dto.ruta?.tipoRuta ?? '').trim() || '—',
+      estimacionDuracionMinutos:
+        min !== undefined && min !== null && Number.isFinite(min) ? min : null,
+    };
+  }
+
   getById(id: string): Observable<AsignacionRutaDetalle> {
     return this.http
       .get<ApiResponse<AsignacionRutaApiDto>>(`${this.base}/${id}`)
@@ -169,6 +191,12 @@ export class AsignacionRutasService {
     return this.http
       .get<ApiResponse<AsignacionRutaApiDto[]>>(`${this.base}/rango-fechas${qs}`)
       .pipe(map((res) => unwrapApiData(res).map((dto) => this.mapDto(dto))));
+  }
+
+  getMisRutas(): Observable<MisRutaRow[]> {
+    return this.http
+      .get<ApiResponse<AsignacionRutaApiDto[]>>(`${this.base}/mis-rutas`)
+      .pipe(map((res) => unwrapApiData(res).map((dto) => this.mapMisRuta(dto))));
   }
 
   create(body: CreateAsignacionRutaRequest): Observable<void> {

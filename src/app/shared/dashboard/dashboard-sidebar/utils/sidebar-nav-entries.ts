@@ -13,6 +13,13 @@ const inicioLink = (id: string, icon: string, path: string): SidebarNavEntry => 
 export const SIDEBAR_CONDUCTOR: SidebarNavEntry[] = [
   { kind: 'section', id: 'sec-conductor', label: 'CONDUCTOR' },
   inicioLink('con-inicio', 'ri-truck-line', PANEL_HOME_URLS.conductor),
+  {
+    kind: 'link',
+    id: 'con-mis-rutas',
+    iconClass: 'ri-route-line',
+    label: 'Mis rutas',
+    routerLink: '/conductor/mis-rutas',
+  },
 ];
 
 export const SIDEBAR_PLANIFICADOR: SidebarNavEntry[] = [
