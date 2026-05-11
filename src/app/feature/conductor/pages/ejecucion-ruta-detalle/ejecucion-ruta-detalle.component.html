@@ -113,4 +113,237 @@
       </div>
     </div>
   </div>
+
+  <!-- Cuerpo: puntos (35%) + mapa (65%) -->
+  <div
+    class="mt-4 flex min-h-0 w-full flex-col gap-4 lg:min-h-[min(70vh,36rem)] lg:flex-row lg:items-stretch lg:gap-4"
+    role="region"
+    aria-label="Puntos y mapa de la ruta"
+  >
+    <!-- Panel puntos de recolección ~35% -->
+    <aside
+      class="flex w-full min-h-0 flex-col rounded-box border border-base-300 bg-base-100 shadow-sm lg:w-[35%] lg:max-w-[35%] lg:shrink-0"
+    >
+      <div class="flex items-center justify-between gap-2 border-b border-base-300 px-4 py-3">
+        <h2 class="text-base font-semibold text-base-content">Puntos de recolección</h2>
+        <button
+          type="button"
+          class="btn btn-ghost btn-square btn-sm shrink-0"
+          aria-label="Filtros u opciones de lista"
+        >
+          <i class="ri-settings-3-line text-lg" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 border-b border-base-300 p-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-lg bg-base-200/60 px-2 py-2 text-center">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-success">Completados</p>
+          <p class="text-lg font-bold tabular-nums text-success">{{ resumenPuntos.completados }}</p>
+        </div>
+        <div class="rounded-lg bg-base-200/60 px-2 py-2 text-center">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Pendientes
+          </p>
+          <p class="text-lg font-bold tabular-nums text-base-content/70">{{ resumenPuntos.pendientes }}</p>
+        </div>
+        <div class="rounded-lg bg-base-200/60 px-2 py-2 text-center">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-warning">Saltados</p>
+          <p class="text-lg font-bold tabular-nums text-warning">{{ resumenPuntos.saltados }}</p>
+        </div>
+        <div class="rounded-lg bg-base-200/60 px-2 py-2 text-center">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-error">Fallidos</p>
+          <p class="text-lg font-bold tabular-nums text-error">{{ resumenPuntos.fallidos }}</p>
+        </div>
+      </div>
+
+      <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3">
+        <ul class="flex flex-col gap-2">
+          @for (punto of puntosRecoleccion; track punto.orden) {
+            <li>
+              <article
+                class="flex gap-3 rounded-xl p-3 transition-colors"
+                [ngClass]="cardPuntoClass(punto.estado)"
+              >
+                <div
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                  [ngClass]="circuloEstadoClass(punto.estado)"
+                  aria-hidden="true"
+                >
+                  {{ punto.orden }}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <h3 class="text-sm font-semibold leading-snug text-base-content">{{ punto.nombre }}</h3>
+                    <span
+                      class="badge badge-sm shrink-0 whitespace-nowrap"
+                      [ngClass]="badgeClassEstado(punto.estado)"
+                    >
+                      {{ labelEstado(punto.estado) }}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-xs text-base-content/65">{{ punto.direccion }}</p>
+                  <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-base-content/55">
+                    <span class="inline-flex items-center gap-1">
+                      <i class="ri-archive-line" aria-hidden="true"></i>
+                      Contenedor
+                    </span>
+                    <span class="inline-flex items-center gap-1">
+                      <i class="ri-walk-line" aria-hidden="true"></i>
+                      {{ punto.distanciaMetros }} m aprox.
+                    </span>
+                  </div>
+                </div>
+                <div class="flex shrink-0 items-center self-center">
+                  <i class="text-xl" [ngClass]="iconoEstadoDerecha(punto.estado)" aria-hidden="true"></i>
+                </div>
+              </article>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="border-t border-base-300 p-3">
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm w-full gap-1 font-normal text-base-content/70"
+        >
+          Ver todos los puntos ({{ totalPuntosRuta }})
+          <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mapa ~65% -->
+    <div
+      class="flex min-h-0 w-full min-h-[20rem] flex-1 flex-col rounded-box border border-base-300 bg-base-100 shadow-sm lg:min-h-0"
+    >
+      <div class="border-b border-base-300 px-4 py-3">
+        <h2 class="text-base font-semibold text-base-content">Mapa de la ruta</h2>
+      </div>
+
+      <div class="relative min-h-[20rem] flex-1 p-2 sm:min-h-[24rem] lg:min-h-0">
+
+
+        <app-map-puntos-lista
+          class="block h-full min-h-[18rem] w-full overflow-hidden rounded-lg"
+          [puntos]="marcadoresMapa()"
+          [mostrarRecorrido]="true"
+          [fillHeight]="true"
+          [minHeightPx]="320"
+          ariaLabel="Mapa de la ruta con puntos de recolección"
+        />
+
+        <div
+          class="absolute bottom-4 left-4 z-[1000] max-w-[14rem] rounded-lg border border-base-300 bg-base-100/95 p-3 text-[0.7rem] shadow-md backdrop-blur-sm"
+        >
+          <p class="mb-2 font-semibold text-base-content">Leyenda</p>
+          <ul class="flex flex-col gap-1.5 text-base-content/80">
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 shrink-0 rounded-full bg-success"></span>
+              Completado
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 shrink-0 rounded-full bg-info"></span>
+              En atención
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 shrink-0 rounded-full bg-base-300"></span>
+              Pendiente
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 shrink-0 rounded-full bg-warning"></span>
+              Saltado
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 shrink-0 rounded-full bg-error"></span>
+              Fallido
+            </li>
+            <li class="flex items-center gap-2 border-t border-base-200 pt-1.5">
+              <i class="ri-navigation-fill shrink-0 text-info" aria-hidden="true"></i>
+              Mi ubicación
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @let pie = pieEjecucion;
+
+  <!-- Footer métricas -->
+  <footer
+    class="mt-4 rounded-box border border-base-300 bg-base-100 shadow-sm"
+    role="contentinfo"
+    aria-label="Resumen de ejecución de la ruta"
+  >
+    <div
+      class="flex flex-col divide-y divide-base-300 md:flex-row md:divide-x md:divide-y-0 md:divide-base-300"
+    >
+      <div class="flex gap-3 px-4 py-4 md:flex-1 md:py-3 lg:px-5">
+        <i class="ri-time-line mt-0.5 shrink-0 text-xl text-base-content/45" aria-hidden="true"></i>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Inicio de ruta
+          </p>
+          <p class="mt-0.5 text-sm font-bold text-base-content">{{ pie.inicioRuta }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 px-4 py-4 md:flex-1 md:py-3 lg:px-5">
+        <i
+          class="ri-timer-line mt-0.5 shrink-0 text-xl text-base-content/45"
+          aria-hidden="true"
+        ></i>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Tiempo transcurrido
+          </p>
+          <p class="mt-0.5 text-sm font-bold tabular-nums text-base-content">{{ pie.tiempoTranscurrido }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 px-4 py-4 md:flex-1 md:py-3 lg:px-5">
+        <i
+          class="ri-road-map-line mt-0.5 shrink-0 text-xl text-base-content/45"
+          aria-hidden="true"
+        ></i>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Distancia recorrida
+          </p>
+          <p class="mt-0.5 text-sm font-bold tabular-nums text-base-content">{{ pie.distanciaRecorrida }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 px-4 py-4 md:flex-1 md:py-3 lg:px-5">
+        <i
+          class="ri-checkbox-circle-line mt-0.5 shrink-0 text-xl text-base-content/45"
+          aria-hidden="true"
+        ></i>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Puntos completados
+          </p>
+          <p class="mt-0.5 text-sm font-bold text-base-content">{{ pie.puntosCompletados }}</p>
+        </div>
+      </div>
+
+      <div
+        class="flex min-w-0 gap-3 px-4 py-4 md:basis-[28%] md:py-3 md:pl-5 lg:basis-[32%] lg:px-5 xl:basis-[36%]"
+      >
+        <i
+          class="ri-file-text-line mt-0.5 shrink-0 text-xl text-base-content/45"
+          aria-hidden="true"
+        ></i>
+        <div class="min-w-0 flex-1">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Notas de la ruta
+          </p>
+          <p class="mt-0.5 text-sm font-normal leading-snug text-base-content/70">
+            {{ pie.notasRuta }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
 </section>
