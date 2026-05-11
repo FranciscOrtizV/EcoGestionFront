@@ -1,10 +1,15 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, finalize, of } from 'rxjs';
 import { toast } from 'ngx-sonner';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import { RutasService } from '../../../../core/services/rutas.service';
-import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
+import {
+  DataTableComponent,
+  type DataTableActionButton,
+  type DataTableActionPayload,
+} from '../../../../shared/components/data-table/data-table.component';
 import type { RutaRow } from '../../../rutas/types/rutaRow.type';
 import { TIPO_RUTA_LABELS } from '../../../rutas/enums/tipo-ruta.enum';
 
@@ -19,6 +24,16 @@ export class ConductorMisRutasComponent implements OnInit {
   private readonly rutasService = inject(RutasService);
   private readonly authService = inject(AuthService);
   private readonly loadingService = inject(LoadingService);
+  private readonly router = inject(Router);
+
+  readonly rutasAcciones: readonly DataTableActionButton[] = [
+    {
+      id: 'ver',
+      iconClass: 'ri-eye-line',
+      label: 'Ver ruta',
+      title: 'Ver ruta',
+    },
+  ];
 
   protected readonly rutas = signal<RutaRow[]>([]);
   protected readonly loadError = signal(false);
@@ -71,6 +86,14 @@ export class ConductorMisRutasComponent implements OnInit {
       ruta.vehiculoCapacidadKg ?? '—',
     ]),
   );
+
+  protected onRutaAccion(payload: DataTableActionPayload): void {
+    if (payload.actionId !== 'ver') {
+      return;
+    }
+    const row = payload.row as RutaRow;
+    void this.router.navigate(['/conductor', 'mis-rutas', row.id]);
+  }
 
   ngOnInit(): void {
     this.cargarMisRutas();

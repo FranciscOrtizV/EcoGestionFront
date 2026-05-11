@@ -1,3 +1,4 @@
+export type { EjecucionRutaDetalle } from './ejecucionRutaDetalle.type';
 export type { CreateRutaRequest } from './createRutaRequest.type';
 export type { PuntoRutaLineaRequest } from './puntoRutaLineaRequest.type';
 export type { RutaDetail, RutaPuntoLineaDetail } from './rutaDetail.type';

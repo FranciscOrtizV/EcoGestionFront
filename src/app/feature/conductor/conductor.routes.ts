@@ -19,6 +19,13 @@ export const CONDUCTOR_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/mis-rutas/mis-rutas.component').then((m) => m.ConductorMisRutasComponent),
       },
+      {
+        path: 'mis-rutas/:ejecucionRutaId',
+        loadComponent: () =>
+          import('./pages/ejecucion-ruta-detalle/ejecucion-ruta-detalle.component').then(
+            (m) => m.EjecucionRutaDetalleComponent,
+          ),
+      },
     ]
   }
 ];

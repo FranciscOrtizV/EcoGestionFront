@@ -1,0 +1,116 @@
+<section class="w-full max-w-full">
+  <nav class="mb-4 text-sm text-base-content/70" aria-label="Migas de pan">
+    <a routerLink="/conductor/mis-rutas" class="link link-hover">Mis rutas</a>
+    <span class="mx-2 text-base-content/40" aria-hidden="true">/</span>
+    <span class="text-base-content">Detalle de ejecución</span>
+  </nav>
+
+  @let h = encabezado();
+
+  <!-- HEADER DETALLE -->
+  <div
+    class="ejecucion-detalle-header rounded-box border border-base-300 bg-base-100 shadow-sm"
+    role="region"
+    aria-label="Resumen de la ruta"
+  >
+    <div
+      class="flex flex-col gap-5 p-4 sm:p-5 xl:flex-row xl:flex-nowrap xl:items-center xl:justify-between xl:gap-6"
+    >
+      <!-- Identificación ruta -->
+      <div class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4 xl:flex-initial xl:border-r xl:border-base-300 xl:pr-6">
+        <div
+          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary sm:h-14 sm:w-14"
+          aria-hidden="true"
+        >
+          <i class="ri-map-pin-fill text-2xl sm:text-[1.75rem]"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2 gap-y-1">
+            <h1 class="text-lg font-bold leading-tight text-base-content sm:text-xl">{{ h.nombre }}</h1>
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full bg-warning/20 px-2.5 py-0.5 text-xs font-medium text-warning-content"
+            >
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-warning" aria-hidden="true"></span>
+              {{ h.estadoLabel }}
+            </span>
+          </div>
+          <p class="mt-0.5 font-mono text-sm text-base-content/60">{{ h.codigo }}</p>
+        </div>
+      </div>
+
+      <!-- Conductor -->
+      <div
+        class="flex min-w-[10rem] items-start gap-3 border-t border-base-300 pt-5 xl:border-t-0 xl:border-r xl:border-base-300 xl:pt-0 xl:pr-6"
+      >
+        <i
+          class="ri-user-3-line mt-0.5 shrink-0 text-lg text-base-content/45"
+          aria-hidden="true"
+        ></i>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Conductor
+          </p>
+          <p class="mt-0.5 text-sm font-medium leading-snug text-base-content">{{ h.conductorNombre }}</p>
+        </div>
+      </div>
+
+      <!-- Vehículo -->
+      <div
+        class="flex min-w-[7rem] items-start gap-3 border-t border-base-300 pt-5 xl:border-t-0 xl:border-r xl:border-base-300 xl:pt-0 xl:pr-6"
+      >
+        <i class="ri-truck-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+            Vehículo
+          </p>
+          <p class="mt-0.5 text-sm font-medium text-base-content">{{ h.vehiculoPatente }}</p>
+        </div>
+      </div>
+
+      <!-- Turno -->
+      <div
+        class="flex min-w-[12rem] max-w-md items-start gap-3 border-t border-base-300 pt-5 xl:border-t-0 xl:border-r xl:border-base-300 xl:pt-0 xl:pr-6"
+      >
+        <i class="ri-time-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">Turno</p>
+          <p class="mt-0.5 text-sm font-medium text-base-content">{{ h.turnoLabel }}</p>
+        </div>
+      </div>
+
+      <!-- Progreso -->
+      <div
+        class="min-w-0 flex-1 border-t border-base-300 pt-5 xl:min-w-[14rem] xl:flex-initial xl:border-t-0 xl:border-r xl:border-base-300 xl:pt-0 xl:pr-6"
+      >
+        <p class="text-xs font-medium text-base-content/55">Progreso de la ruta</p>
+        <p class="mt-1 text-sm font-medium text-base-content">
+          {{ h.puntosCompletados }}/{{ h.puntosTotal }} puntos completados
+        </p>
+        <div class="mt-2 flex items-center gap-3">
+          <progress
+            class="progress progress-success h-2 flex-1 border-0 bg-base-300"
+            [value]="h.progresoPct"
+            max="100"
+          ></progress>
+          <span class="shrink-0 text-sm font-semibold tabular-nums text-base-content"
+            >{{ h.progresoPct }}%</span
+          >
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div
+        class="flex flex-col gap-2 border-t border-base-300 pt-5 sm:flex-row sm:flex-wrap xl:shrink-0 xl:border-t-0 xl:pt-0"
+      >
+        <button type="button" class="btn btn-error gap-2 text-white sm:btn-sm">
+          <i class="ri-flag-line text-lg" aria-hidden="true"></i>
+          Finalizar ruta
+        </button>
+        <button type="button" class="btn btn-outline btn-neutral gap-2 sm:btn-sm">
+          <i class="ri-error-warning-line text-lg" aria-hidden="true"></i>
+          Reportar incidencia general
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
