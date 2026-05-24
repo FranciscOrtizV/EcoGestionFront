@@ -1,8 +1,62 @@
 <section class="w-full max-w-full">
-  <h3 class="text-2xl font-semibold text-base-content mb-2">Gestión de tipos de incidencias</h3>
+  <h3 class="text-2xl font-semibold text-base-content mb-2">Incidencias</h3>
   <p class="text-base-content/70 text-sm leading-relaxed mb-4">
-    Área de gestión de tipos de incidencia. Aquí podrás listar, crear y administrar tipos de incidencias en el sistema.
+    Área de supervisión de incidencias. Aquí podrás consultar y gestionar las incidencias reportadas en el sistema.
   </p>
 
+  <div class="flex w-full flex-row gap-4">
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Incidencias totales"
+      [value]="statTotal()"
+      cardClass="bg-base-100"
+      valueClass="text-info"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Abiertas"
+      [value]="statAbiertas()"
+      cardClass="bg-base-100"
+      valueClass="text-warning"
+    />
+    <app-stat-card
+      class="block min-w-0 flex-1"
+      title="Prioridad alta o crítica"
+      [value]="statPrioridadAlta()"
+      cardClass="bg-base-100"
+      valueClass="text-error"
+    />
+  </div>
 
+  <div class="mt-6 w-full rounded-box bg-base-100 p-4 shadow">
+    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h4 class="text-lg font-semibold text-base-content">Listado de incidencias</h4>
+    </div>
+
+    <app-data-table
+      [sortable]="true"
+      [searchable]="true"
+      searchPlaceholder="Buscar por título, tipo, ruta, punto, reportado por, prioridad o estado…"
+      searchInputId="incidencias-table-search"
+      [paginate]="true"
+      [pageSize]="tablePageSize"
+      [trackByColumnIndex]="0"
+      [headers]="incidenciaTableHeaders"
+      [rows]="incidenciaTableRows()"
+      [columnCellClasses]="incidenciaTableColumnClasses"
+      emptyMessage="No hay incidencias para mostrar."
+      [badgeColumn]="estadoBadgeColumn"
+      actionsHeader="Acciones"
+      [actionButtonsForRow]="incidenciaTableActionsForRow"
+      [actionsRowData]="incidenciasForTableActions()"
+      (actionClick)="onIncidenciaTableAction($event)"
+    />
+  </div>
 </section>
+
+@if (incidenciaDetalleSidebarId(); as incidenciaId) {
+  <app-incidencia-detalle-sidebar
+    [incidenciaId]="incidenciaId"
+    (closed)="cerrarDetalleIncidenciaSidebar()"
+  />
+}

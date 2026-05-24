@@ -1,0 +1,253 @@
+<div class="fixed inset-0 z-[210]" role="presentation">
+  <button
+    type="button"
+    class="absolute inset-0 bg-base-content/40 backdrop-blur-[1px]"
+    (click)="cerrar()"
+    aria-label="Cerrar panel"
+  ></button>
+
+  <aside
+    class="incidencia-detalle-panel absolute right-0 top-0 flex h-[100dvh] w-full max-w-md flex-col border-l border-base-300 bg-base-100 shadow-2xl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="incidencia-detalle-titulo"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="flex shrink-0 items-center justify-between gap-3 border-b border-base-300 px-4 py-3">
+      <h2 id="incidencia-detalle-titulo" class="text-base font-bold text-base-content">
+        Detalle de incidencia
+      </h2>
+      <button
+        type="button"
+        class="btn btn-ghost btn-square btn-sm shrink-0"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        <i class="ri-close-line text-xl" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    @if (loading()) {
+      <div class="flex flex-1 flex-col items-center justify-center gap-3 px-4 py-16">
+        <span class="loading loading-spinner loading-lg text-primary" aria-hidden="true"></span>
+        <p class="text-sm text-base-content/70">Cargando detalle…</p>
+      </div>
+    } @else if (detalle()) {
+      @let d = detalle()!;
+      <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <section class="border-b border-base-300 px-4 py-4">
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="min-w-0 flex-1 text-base font-bold leading-snug text-base-content">
+              {{ d.titulo }}
+            </h3>
+            <div class="flex shrink-0 flex-col items-end gap-1">
+              <span class="badge badge-sm whitespace-nowrap" [ngClass]="estadoBadgeClass()">
+                {{ labelEstado() }}
+              </span>
+              <span class="badge badge-sm badge-outline whitespace-nowrap" [ngClass]="prioridadBadgeClass()">
+                {{ labelPrioridad() }}
+              </span>
+            </div>
+          </div>
+
+          <p class="mt-2 text-xs text-base-content/50 font-mono">{{ d.id }}</p>
+
+          <dl class="mt-5 flex flex-col gap-4 text-sm">
+            <div class="flex gap-3">
+              <i class="ri-alert-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+              <div>
+                <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">Tipo</dt>
+                <dd class="mt-0.5 font-medium text-base-content">
+                  {{ labelTipoIncidenciaNombre(d.tipoIncidencia.nombre) }}
+                </dd>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <i class="ri-user-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+              <div>
+                <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                  Reportado por
+                </dt>
+                <dd class="mt-0.5 font-medium text-base-content">{{ d.reportadoPor.nombreCompleto }}</dd>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <i class="ri-user-follow-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+              <div>
+                <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                  Resuelto por
+                </dt>
+                <dd class="mt-0.5 font-medium text-base-content">
+                  {{ d.resueltoPor?.nombreCompleto ?? '—' }}
+                </dd>
+              </div>
+            </div>
+
+            @if (d.fechaReporte) {
+              <div class="flex gap-3">
+                <i class="ri-calendar-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+                <div>
+                  <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                    Fecha de reporte
+                  </dt>
+                  <dd class="mt-0.5 font-medium text-base-content">
+                    {{ formatFechaReporteIncidencia(d.fechaReporte) }}
+                  </dd>
+                </div>
+              </div>
+            }
+
+            <div class="flex gap-3">
+              <i class="ri-route-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+              <div>
+                <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">Ruta</dt>
+                <dd class="mt-0.5 font-medium text-base-content">{{ rutaIncidenciaLabel(d.ruta) }}</dd>
+              </div>
+            </div>
+
+            @if (d.puntoRecoleccion) {
+              <div class="flex gap-3">
+                <i class="ri-map-pin-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+                <div>
+                  <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                    Punto de recolección
+                  </dt>
+                  <dd class="mt-0.5 font-medium leading-snug text-base-content">
+                    {{ d.puntoRecoleccion.nombre }}
+                  </dd>
+                  <dd class="mt-0.5 text-base-content/70">{{ d.puntoRecoleccion.direccion }}</dd>
+                </div>
+              </div>
+            }
+
+            @if (d.latitud !== null && d.longitud !== null) {
+              <div class="flex gap-3">
+                <i class="ri-crosshair-2-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+                <div>
+                  <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                    Coordenadas
+                  </dt>
+                  <dd class="mt-0.5 font-mono text-xs text-base-content">
+                    {{ d.latitud | number: '1.6-6' }}, {{ d.longitud | number: '1.6-6' }}
+                  </dd>
+                </div>
+              </div>
+            }
+          </dl>
+        </section>
+
+        <section class="border-b border-base-300 px-4 py-4">
+          <h4 class="mb-2 text-sm font-bold text-base-content">Descripción</h4>
+          <p class="text-sm leading-relaxed text-base-content/90 whitespace-pre-wrap">
+            {{ d.descripcion?.trim() || 'Sin descripción registrada.' }}
+          </p>
+        </section>
+
+        <section class="border-b border-base-300 px-4 py-4">
+          <h4 class="mb-3 text-sm font-bold text-base-content">Ubicación</h4>
+          @if (tieneCoordenadas()) {
+            <div
+              class="relative flex h-[220px] flex-col overflow-hidden rounded-box border border-base-200 bg-base-200/30"
+            >
+              <app-map-puntos-lista
+                class="block h-full min-h-[220px] flex-1"
+                [puntos]="marcadoresMapa()"
+                [mostrarRecorrido]="false"
+                [fillHeight]="true"
+                [minHeightPx]="220"
+                ariaLabel="Mapa con la ubicación de la incidencia"
+              />
+            </div>
+          } @else {
+            <p class="text-sm text-base-content/60">No hay coordenadas registradas para esta incidencia.</p>
+          }
+        </section>
+
+        <section class="px-4 py-4">
+          <h4 class="mb-3 text-sm font-bold text-base-content">Evidencia</h4>
+          @if (d.evidencias.length === 0) {
+            <p class="text-sm text-base-content/60">Sin fotografías registradas para esta incidencia.</p>
+          } @else {
+            @let evActual = d.evidencias[indiceEvidenciaCarrusel()];
+            @let totalEvidencias = d.evidencias.length;
+            <div
+              class="overflow-hidden rounded-box border border-base-300 bg-base-200/40"
+              role="region"
+              aria-roledescription="carrusel"
+              aria-label="Evidencias fotográficas de la incidencia"
+            >
+              <div class="relative">
+                <a
+                  [href]="evActual.urlFoto"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block"
+                  [attr.aria-label]="'Ver evidencia ' + evActual.fileName"
+                >
+                  <img
+                    [src]="evActual.urlFoto"
+                    [alt]="evActual.fileName || 'Evidencia fotográfica'"
+                    class="aspect-square w-full object-cover"
+                    loading="lazy"
+                  />
+                </a>
+
+                @if (totalEvidencias > 1) {
+                  <button
+                    type="button"
+                    class="btn btn-circle btn-xs absolute left-2 top-1/2 -translate-y-1/2 border-0 bg-base-100/85 shadow-sm backdrop-blur-sm"
+                    (click)="anteriorEvidencia(totalEvidencias, $event)"
+                    aria-label="Evidencia anterior"
+                  >
+                    <i class="ri-arrow-left-s-line text-base" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-circle btn-xs absolute right-2 top-1/2 -translate-y-1/2 border-0 bg-base-100/85 shadow-sm backdrop-blur-sm"
+                    (click)="siguienteEvidencia(totalEvidencias, $event)"
+                    aria-label="Evidencia siguiente"
+                  >
+                    <i class="ri-arrow-right-s-line text-base" aria-hidden="true"></i>
+                  </button>
+                  <span
+                    class="absolute bottom-2 right-2 rounded-box bg-base-content/70 px-2 py-0.5 text-[0.65rem] font-medium tabular-nums text-base-100"
+                    aria-live="polite"
+                  >
+                    {{ indiceEvidenciaCarrusel() + 1 }} / {{ totalEvidencias }}
+                  </span>
+                }
+              </div>
+
+              @if (evActual.takenAt) {
+                <p class="border-t border-base-300 px-2 py-1.5 text-[0.65rem] text-base-content/55">
+                  Tomada el {{ formatFechaReporteIncidencia(evActual.takenAt) }}
+                </p>
+              }
+
+              @if (totalEvidencias > 1) {
+                <div class="flex justify-center gap-1.5 border-t border-base-300 px-2 py-2">
+                  @for (ev of d.evidencias; track ev.id; let i = $index) {
+                    <button
+                      type="button"
+                      class="h-1.5 w-1.5 rounded-full transition-colors"
+                      [ngClass]="i === indiceEvidenciaCarrusel() ? 'bg-primary' : 'bg-base-content/25'"
+                      (click)="irAEvidencia(i)"
+                      [attr.aria-label]="'Ir a evidencia ' + (i + 1)"
+                      [attr.aria-current]="i === indiceEvidenciaCarrusel() ? 'true' : null"
+                    ></button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </section>
+      </div>
+    } @else {
+      <div class="flex flex-1 items-center justify-center px-4 py-10 text-center text-sm text-base-content/60">
+        No fue posible mostrar el detalle.
+      </div>
+    }
+  </aside>
+</div>

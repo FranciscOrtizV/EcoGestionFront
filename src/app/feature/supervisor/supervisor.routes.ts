@@ -14,6 +14,13 @@ export const SUPERVISOR_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/inicio/inicio.component').then((m) => m.SupervisorInicioComponent),
       },
+      {
+        path: 'incidencias',
+        loadComponent: () =>
+          import('../incidencias/pages/incidencias/incidenciasPage.component').then(
+            (m) => m.IncidenciasPage,
+          ),
+      },
     ]
   }
 ];

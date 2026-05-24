@@ -30,6 +30,13 @@ export const SIDEBAR_PLANIFICADOR: SidebarNavEntry[] = [
 export const SIDEBAR_SUPERVISOR: SidebarNavEntry[] = [
   { kind: 'section', id: 'sec-sup', label: 'SUPERVISIÓN' },
   inicioLink('sup-inicio', 'ri-eye-line', PANEL_HOME_URLS.supervisor),
+  {
+    kind: 'link',
+    id: 'sup-incidencias',
+    iconClass: 'ri-error-warning-line',
+    label: 'Incidencias',
+    routerLink: '/supervisor/incidencias',
+  },
 ];
 
 export const SIDEBAR_ADMIN: SidebarNavEntry[] = [
