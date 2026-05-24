@@ -126,7 +126,11 @@
             </button>
           }
           @if (mostrarBotonFinalizarRuta()) {
-            <button type="button" class="btn btn-error gap-2 text-white sm:btn-sm">
+            <button
+              type="button"
+              class="btn btn-error gap-2 text-white sm:btn-sm"
+              (click)="onIntentarFinalizarRuta()"
+            >
               <i class="ri-flag-line text-lg" aria-hidden="true"></i>
               Finalizar ruta
             </button>
@@ -455,7 +459,7 @@
             </dl>
           </section>
 
-          @if (mostrarAccionesPunto()) {
+          @if (mostrarAccionesPuntoDetalle(p)) {
             <section class="border-b border-base-300 px-4 py-4">
               <h4 class="mb-3 text-sm font-bold text-base-content">Acciones</h4>
               <div class="flex flex-col gap-2">
@@ -463,11 +467,11 @@
                   <i class="ri-checkbox-circle-line text-lg" aria-hidden="true"></i>
                   Marcar como completado
                 </button>
-                <button type="button" class="btn btn-warning w-full gap-2 text-warning-content">
+                <button type="button" class="btn btn-warning w-full gap-2 text-warning-content" (click)="abrirModalSaltarPunto(p)">
                   <i class="ri-login-circle-line text-lg" aria-hidden="true"></i>
                   Saltar punto
                 </button>
-                <button type="button" class="btn btn-outline btn-neutral w-full gap-2">
+                <button type="button" class="btn btn-outline btn-neutral w-full gap-2" (click)="abrirModalReportarIncidencia(p)">
                   <i class="ri-error-warning-line text-lg" aria-hidden="true"></i>
                   Reportar incidencia
                 </button>
@@ -564,4 +568,74 @@
     (cancelled)="cerrarModalActualizarEstadoPunto()"
     (actualizado)="onEstadoPuntoActualizado()"
   />
+}
+
+@if (modalReportarIncidenciaPunto(); as ctxInc) {
+  <app-reportar-incidencia-punto-modal
+    [ejecucionRutaId]="ejecucionRutaId()"
+    [puntoId]="ctxInc.puntoId"
+    [puntoNombre]="ctxInc.puntoNombre"
+    [puntoLatitud]="ctxInc.latitud"
+    [puntoLongitud]="ctxInc.longitud"
+    (cancelled)="cerrarModalReportarIncidenciaPunto()"
+    (reportada)="onIncidenciaReportada()"
+  />
+}
+
+@if (modalFinalizarRutaAbierto()) {
+  <div class="fixed inset-0 z-[250]" role="presentation">
+    <button
+      type="button"
+      class="absolute inset-0 bg-base-content/45 backdrop-blur-[1px]"
+      (click)="cerrarModalFinalizarRuta()"
+      aria-label="Cerrar modal finalizar ruta"
+    ></button>
+
+    <div class="absolute inset-0 grid place-items-center p-4">
+      <section
+        class="w-full max-w-xl rounded-box border border-base-300 bg-base-100 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="finalizar-ruta-modal-titulo"
+      >
+        <header class="flex items-center justify-between gap-3 border-b border-base-300 px-5 py-4">
+          <h2 id="finalizar-ruta-modal-titulo" class="text-lg font-bold text-base-content">
+            Finalizar ruta
+          </h2>
+          <button
+            type="button"
+            class="btn btn-ghost btn-square btn-sm"
+            (click)="cerrarModalFinalizarRuta()"
+            aria-label="Cerrar"
+          >
+            <i class="ri-close-line text-xl" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <div class="space-y-4 px-5 py-4">
+          <p class="text-sm text-base-content/70">
+            Este formulario se implementará en el siguiente paso.
+          </p>
+
+          <label class="form-control w-full">
+            <span class="label"><span class="label-text">Observaciones de cierre</span></span>
+            <textarea
+              class="textarea textarea-bordered h-24"
+              placeholder="Campo placeholder para futura implementación"
+              disabled
+            ></textarea>
+          </label>
+        </div>
+
+        <footer class="flex justify-end gap-2 border-t border-base-300 px-5 py-4">
+          <button type="button" class="btn btn-ghost" (click)="cerrarModalFinalizarRuta()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-error text-white" disabled>
+            Confirmar finalización
+          </button>
+        </footer>
+      </section>
+    </div>
+  </div>
 }

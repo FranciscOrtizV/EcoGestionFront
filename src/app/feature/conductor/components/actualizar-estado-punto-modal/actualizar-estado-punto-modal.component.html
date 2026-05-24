@@ -5,7 +5,7 @@
   aria-labelledby="app-actualizar-estado-punto-modal-title"
 >
   <div
-    class="modal-box relative z-10 flex max-h-[92vh] w-[min(96vw,520px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
+    class="modal-box relative z-10 flex max-h-[92vh] w-[min(96vw,640px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
     (click)="$event.stopPropagation()"
   >
     <div class="shrink-0 border-b border-base-300 px-6 pb-3 pt-6">
@@ -15,7 +15,7 @@
       <p class="pt-2 text-sm text-base-content/70">
         Registra el nuevo estado de
         <span class="font-medium text-base-content">{{ puntoNombre() }}</span>
-        y, si lo necesitas, agrega un comentario.
+        y agrega un comentario con evidencia fotográfica.
       </p>
     </div>
 
@@ -40,7 +40,9 @@
 
         <div>
           <label for="aep-comentarios" class="mb-1 block text-sm text-base-content/80">
-            Comentarios
+            Comentarios @if (comentariosSonRequeridos()) {
+              <span aria-hidden="true">*</span>
+            }
           </label>
           <textarea
             id="aep-comentarios"
@@ -48,8 +50,92 @@
             rows="4"
             class="textarea textarea-bordered w-full bg-base-100"
             placeholder="Observaciones sobre la visita, incidencias menores, etc."
+            [ngClass]="fieldInvalid('comentarios') ? 'textarea-error' : ''"
           ></textarea>
-          <p class="mt-1 text-xs text-base-content/55">Opcional. Visible en el detalle del punto.</p>
+          @if (fieldInvalid('comentarios')) {
+            <p class="mt-1 text-sm text-error">
+              Los comentarios son obligatorios cuando el estado es completado o fallido.
+            </p>
+          } @else if (comentariosSonRequeridos()) {
+            <p class="mt-1 text-xs text-base-content/55">Obligatorio para completado o fallido.</p>
+          } @else {
+            <p class="mt-1 text-xs text-base-content/55">Opcional para este estado.</p>
+          }
+        </div>
+
+        <div>
+          <span class="mb-1 block text-sm text-base-content/80">
+            Evidencia fotográfica @if (evidenciaFotoEsRequerida()) {
+              <span aria-hidden="true">*</span>
+            }
+          </span>
+          @if (evidenciaFotoEsRequerida()) {
+            <p class="mb-3 text-xs text-base-content/55">Toma una foto como respaldo de la visita.</p>
+          } @else {
+            <p class="mb-3 text-xs text-base-content/55">Opcional cuando el punto se marca como saltado.</p>
+          }
+
+          @if (fotoPreview(); as preview) {
+            <div class="space-y-3">
+              <div class="overflow-hidden rounded-lg border border-base-300 bg-base-200/30">
+                <img
+                  [src]="preview"
+                  alt="Foto de evidencia capturada"
+                  class="max-h-56 w-full object-contain"
+                />
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline btn-sm gap-1.5" (click)="volverATomarFoto()">
+                  <i class="ri-camera-line text-base" aria-hidden="true"></i>
+                  Tomar otra
+                </button>
+                <button type="button" class="btn btn-ghost btn-sm gap-1.5" (click)="quitarFoto()">
+                  <i class="ri-delete-bin-line text-base" aria-hidden="true"></i>
+                  Quitar foto
+                </button>
+              </div>
+            </div>
+          } @else if (mostrarCamara()) {
+            <div class="space-y-3">
+              <div class="overflow-hidden rounded-lg border border-base-300 bg-base-200/30">
+                <webcam
+                  [height]="280"
+                  [width]="560"
+                  [trigger]="triggerCaptura$"
+                  [allowCameraSwitch]="true"
+                  mirrorImage="auto"
+                  (imageCapture)="onFotoCapturada($event)"
+                  (initError)="onErrorCamara($event)"
+                />
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" class="btn btn-primary btn-sm gap-1.5" (click)="tomarFoto()">
+                  <i class="ri-camera-3-line text-base" aria-hidden="true"></i>
+                  Capturar foto
+                </button>
+                <button type="button" class="btn btn-ghost btn-sm" (click)="cerrarCamara()">Cancelar</button>
+              </div>
+            </div>
+          } @else {
+            <button
+              type="button"
+              class="flex min-h-[7rem] w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-3 py-4 text-center text-sm transition-colors hover:border-primary/40 hover:bg-base-200/50"
+              [ngClass]="
+                fieldInvalid('evidenciaFoto')
+                  ? 'border-error bg-error/5 text-error'
+                  : 'border-base-300 bg-base-200/30 text-base-content/60'
+              "
+              (click)="abrirCamara()"
+            >
+              <i class="ri-camera-line text-2xl" aria-hidden="true"></i>
+              <span>Abrir cámara y tomar foto</span>
+            </button>
+          }
+          @if (fieldInvalid('evidenciaFoto')) {
+            <p class="mt-2 text-sm text-error">
+              La evidencia fotográfica es obligatoria para completado o fallido.
+            </p>
+          }
         </div>
       </div>
 

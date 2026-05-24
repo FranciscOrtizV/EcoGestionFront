@@ -21,6 +21,7 @@ import {
 } from '../../../../shared/components/map-puntos-lista/map-puntos-lista.component';
 import { ActualizarEstadoPuntoModalComponent } from '../../components/actualizar-estado-punto-modal/actualizar-estado-punto-modal.component';
 import { IniciarRutaModalComponent } from '../../components/iniciar-ruta-modal/iniciar-ruta-modal.component';
+import { ReportarIncidenciaPuntoModalComponent } from '../../components/reportar-incidencia-punto-modal/reportar-incidencia-punto-modal.component';
 import { EstadoEjecucionRutaEnum } from '../../../../shared/enums/EstadoEjecucionRutaEnum';
 
 const TURNO_LABELS: Record<TurnoEnum, string> = {
@@ -157,7 +158,7 @@ function mapPuntoDtoToVista(dto: PuntoEjecucionRutaItemDto): PuntoRecoleccionVis
 @Component({
   selector: 'app-ejecucion-ruta-detalle',
   standalone: true,
-  imports: [NgClass, RouterLink, MapPuntosListaComponent, IniciarRutaModalComponent, ActualizarEstadoPuntoModalComponent],
+  imports: [NgClass, RouterLink, MapPuntosListaComponent, IniciarRutaModalComponent, ActualizarEstadoPuntoModalComponent, ReportarIncidenciaPuntoModalComponent],
   templateUrl: './ejecucion-ruta-detalle.component.html',
   styleUrl: './ejecucion-ruta-detalle.component.css',
 })
@@ -188,6 +189,13 @@ export class EjecucionRutaDetalleComponent {
     const estado = this.resumenApi()?.estadoEjecucion?.trim().toUpperCase();
     return estado === EstadoEjecucionRutaEnum.EN_PROCESO || estado === 'EN_PROGRESO';
   });
+
+  /** Acciones del punto solo cuando la ejecución está en curso y el punto sigue pendiente. */
+  protected mostrarAccionesPuntoDetalle(p: PuntoRecoleccionVista): boolean {
+    return (
+      this.mostrarAccionesPunto() && p.estadoApi === EstadoEjecucionPuntoRutaEnum.PENDIENTE
+    );
+  }
 
   protected readonly mostrarBotonIniciarRuta = computed(() => {
     const resumen = this.resumenApi();
@@ -271,6 +279,8 @@ export class EjecucionRutaDetalleComponent {
 
   /** Modal para registrar odómetro y ubicación al iniciar la ruta. */
   protected readonly modalIniciarRutaAbierto = signal(false);
+   /** Modal placeholder para finalizar ruta (formulario pendiente). */
+   protected readonly modalFinalizarRutaAbierto = signal(false);
 
   /** Contexto del modal para actualizar estado/comentarios de un punto. */
   protected readonly modalActualizarEstadoPunto = signal<{
@@ -279,6 +289,14 @@ export class EjecucionRutaDetalleComponent {
     estadoInicial: EstadoEjecucionPuntoRutaEnum;
     comentariosIniciales: string | null;
     estadoPredeterminado: EstadoEjecucionPuntoRutaEnum | null;
+  } | null>(null);
+
+  /** Contexto del modal para reportar incidencia en un punto. */
+  protected readonly modalReportarIncidenciaPunto = signal<{
+    puntoId: string;
+    puntoNombre: string;
+    latitud: number | null;
+    longitud: number | null;
   } | null>(null);
 
   /** Valores de ejemplo en la sección evidencia (maquetación). */
@@ -409,6 +427,14 @@ export class EjecucionRutaDetalleComponent {
 
   @HostListener('document:keydown.escape')
   protected onEscapeCerrarPanel(): void {
+    if (this.modalReportarIncidenciaPunto()) {
+      this.cerrarModalReportarIncidenciaPunto();
+      return;
+    }
+    if (this.modalFinalizarRutaAbierto()) {
+      this.cerrarModalFinalizarRuta();
+      return;
+    }
     if (this.modalActualizarEstadoPunto()) {
       this.cerrarModalActualizarEstadoPunto();
       return;
@@ -430,19 +456,48 @@ export class EjecucionRutaDetalleComponent {
     this.modalIniciarRutaAbierto.set(false);
   }
 
+  protected onIntentarFinalizarRuta(): void {
+    const tienePendientes = this.puntosApi().some(
+      (p) => p.estado === EstadoEjecucionPuntoRutaEnum.PENDIENTE,
+    );
+    if (tienePendientes) {
+      toast.warning(
+        'No puedes finalizar la ruta mientras existan puntos pendientes.',
+      );
+      return;
+    }
+
+    this.modalFinalizarRutaAbierto.set(true);
+  }
+
+  protected cerrarModalFinalizarRuta(): void {
+    this.modalFinalizarRutaAbierto.set(false);
+  }
+
   protected onRutaIniciada(): void {
     this.modalIniciarRutaAbierto.set(false);
     this.recargarDatosEjecucion();
   }
 
-  protected abrirModalMarcarCompletado(p: PuntoRecoleccionVista): void {
+  protected abrirModalActualizarEstadoPunto(
+    p: PuntoRecoleccionVista,
+    estadoPredeterminado: EstadoEjecucionPuntoRutaEnum,
+  ): void {
     this.modalActualizarEstadoPunto.set({
       puntoId: p.id,
       puntoNombre: p.nombre,
       estadoInicial: p.estadoApi,
       comentariosIniciales: p.comentarios,
-      estadoPredeterminado: EstadoEjecucionPuntoRutaEnum.COMPLETADO,
+      estadoPredeterminado,
     });
+  }
+
+  protected abrirModalMarcarCompletado(p: PuntoRecoleccionVista): void {
+    this.abrirModalActualizarEstadoPunto(p, EstadoEjecucionPuntoRutaEnum.COMPLETADO);
+  }
+
+  protected abrirModalSaltarPunto(p: PuntoRecoleccionVista): void {
+    this.abrirModalActualizarEstadoPunto(p, EstadoEjecucionPuntoRutaEnum.SALTADO);
   }
 
   protected cerrarModalActualizarEstadoPunto(): void {
@@ -453,6 +508,23 @@ export class EjecucionRutaDetalleComponent {
     this.modalActualizarEstadoPunto.set(null);
     const puntoId = this.puntoDetalleSidebar()?.id;
     this.recargarDatosEjecucion(puntoId);
+  }
+
+  protected abrirModalReportarIncidencia(p: PuntoRecoleccionVista): void {
+    this.modalReportarIncidenciaPunto.set({
+      puntoId: p.id,
+      puntoNombre: p.nombre,
+      latitud: p.latitud,
+      longitud: p.longitud,
+    });
+  }
+
+  protected cerrarModalReportarIncidenciaPunto(): void {
+    this.modalReportarIncidenciaPunto.set(null);
+  }
+
+  protected onIncidenciaReportada(): void {
+    this.modalReportarIncidenciaPunto.set(null);
   }
 
   private recargarDatosEjecucion(puntoDetalleId?: string): void {

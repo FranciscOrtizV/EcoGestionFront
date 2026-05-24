@@ -218,12 +218,31 @@ export class EjecucionRutasService {
   }
 
   actualizarEstadoPunto(
-    ejecucionRutaId: string,
+    _ejecucionRutaId: string,
     puntoId: string,
     body: ActualizarEstadoPuntoEjecucionRequest,
   ): Observable<void> {
-    return this.http
-      .patch<unknown>(`${this.base}/${ejecucionRutaId}/puntos/${puntoId}`, body)
-      .pipe(map(() => undefined));
+    const formData = new FormData();
+    formData.append('puntoRutaEjecucionId', puntoId);
+    formData.append('estado', body.estado);
+
+    if (body.comentarios != null && body.comentarios.trim() !== '') {
+      formData.append('comentarios', body.comentarios.trim());
+    }
+
+    if (body.evidenciaFoto) {
+      formData.append('fotografia', base64ToJpegFile(body.evidenciaFoto));
+    }
+
+    return this.http.patch<unknown>(`${this.base}/puntos/estado`, formData).pipe(map(() => undefined));
   }
+}
+
+function base64ToJpegFile(base64: string): File {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new File([bytes], 'evidencia.jpg', { type: 'image/jpeg' });
 }

@@ -3,4 +3,5 @@ import type { EstadoEjecucionPuntoRutaEnum } from '../../../shared/enums/EstadoE
 export type ActualizarEstadoPuntoEjecucionRequest = {
   estado: EstadoEjecucionPuntoRutaEnum;
   comentarios?: string | null;
+  evidenciaFoto?: string | null;
 };
