@@ -37,15 +37,13 @@ function labelTurno(turno: TurnoEnum | null | undefined): string {
 
 /** `true` si `ahora` está dentro de [inicio, fin] (ambos inclusive). */
 function estaEnVentanaPlanificacion(
-  inicioIso: string | null | undefined,
-  finIso: string | null | undefined,
+  inicio: Date | null | undefined,
+  fin: Date | null | undefined,
   ahora: Date = new Date(),
 ): boolean {
-  if (!inicioIso?.trim() || !finIso?.trim()) {
+  if (!inicio || !fin) {
     return false;
   }
-  const inicio = new Date(inicioIso);
-  const fin = new Date(finIso);
   if (Number.isNaN(inicio.getTime()) || Number.isNaN(fin.getTime())) {
     return false;
   }
@@ -337,14 +335,22 @@ export class EjecucionRutaDetalleComponent {
     };
   });
 
-  /** Barra inferior de métricas (maquetación). */
-  readonly pieEjecucion = {
-    inicioRuta: '06:12 a. m.',
-    tiempoTranscurrido: '04:30:12',
-    distanciaRecorrida: '18.6 km',
-    puntosCompletados: '3 de 12',
-    notasRuta: 'Recolección programada sin novedades hasta el momento.',
-  } as const;
+  /** Barra inferior de métricas desde el resumen API. */
+  readonly pieEjecucion = computed(() => {
+    const r = this.resumenApi();
+    const completados = this.resumenPuntos().completados;
+    const total = this.totalPuntosRuta();
+
+    return {
+      inicioRuta: r?.tiempoInicio
+        ? r.tiempoInicio.toLocaleString('es-CL', { timeStyle: 'short' })
+        : '—',
+      tiempoTranscurrido: r?.tiempoTranscurrido?.trim() || '—',
+      distanciaRecorrida: '—',
+      puntosCompletados: `${completados} de ${total}`,
+      notasRuta: 'Recolección programada sin novedades hasta el momento.',
+    };
+  });
 
   readonly marcadoresMapa = computed((): MapaPuntoMarcador[] => {
     const puntos = this.puntosRecoleccion();

@@ -273,7 +273,7 @@
   </div>
 
   @if (mostrarPieEjecucion()) {
-    @let pie = pieEjecucion;
+    @let pie = pieEjecucion();
 
     <!-- Footer métricas -->
     <footer
@@ -317,23 +317,6 @@
             Puntos completados
           </p>
           <p class="mt-0.5 text-sm font-bold text-base-content">{{ pie.puntosCompletados }}</p>
-        </div>
-      </div>
-
-      <div
-        class="flex min-w-0 gap-3 px-4 py-4 md:basis-[28%] md:py-3 md:pl-5 lg:basis-[32%] lg:px-5 xl:basis-[36%]"
-      >
-        <i
-          class="ri-file-text-line mt-0.5 shrink-0 text-xl text-base-content/45"
-          aria-hidden="true"
-        ></i>
-        <div class="min-w-0 flex-1">
-          <p class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
-            Notas de la ruta
-          </p>
-          <p class="mt-0.5 text-sm font-normal leading-snug text-base-content/70">
-            {{ pie.notasRuta }}
-          </p>
         </div>
       </div>
     </div>

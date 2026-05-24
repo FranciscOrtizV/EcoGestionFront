@@ -10,6 +10,8 @@ export type ResumenEjecucionRutaDto = {
   modeloVehiculo: string | null;
   estadoEjecucion: string | null;
   turno: TurnoEnum;
-  planificacionTiempoInicio: string | null;
-  planificacionTiempoFin: string | null;
+  planificacionTiempoInicio: Date | null;
+  planificacionTiempoFin: Date | null;
+  tiempoInicio: Date | null;
+  tiempoTranscurrido: string | null;
 };

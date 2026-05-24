@@ -89,6 +89,18 @@ function pickIsoDate(o: Record<string, unknown>, camel: string, snake: string): 
   return String(v);
 }
 
+function pickDate(o: Record<string, unknown>, camel: string, snake: string): Date | null {
+  const v = o[camel] ?? o[snake];
+  if (v === null || v === undefined || v === '') {
+    return null;
+  }
+  if (v instanceof Date) {
+    return Number.isNaN(v.getTime()) ? null : v;
+  }
+  const d = new Date(String(v));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 function coerceEnumValue<T extends string>(v: unknown, values: readonly T[], fallback: T): T {
   const s = String(v ?? '')
     .trim()
@@ -124,12 +136,14 @@ function mapPayloadToResumenDto(raw: Record<string, unknown>): ResumenEjecucionR
     modeloVehiculo: pickNullStr(raw, 'modeloVehiculo', 'modelo_vehiculo'),
     estadoEjecucion: pickNullStr(raw, 'estadoEjecucion', 'estado_ejecucion'),
     turno: coerceTurno(raw['turno']),
-    planificacionTiempoInicio: pickIsoDate(
+    planificacionTiempoInicio: pickDate(
       raw,
       'planificacionTiempoInicio',
       'planificacion_tiempo_inicio',
     ),
-    planificacionTiempoFin: pickIsoDate(raw, 'planificacionTiempoFin', 'planificacion_tiempo_fin'),
+    planificacionTiempoFin: pickDate(raw, 'planificacionTiempoFin', 'planificacion_tiempo_fin'),
+    tiempoInicio: pickDate(raw, 'tiempoInicio', 'tiempo_inicio'),
+    tiempoTranscurrido: pickNullStr(raw, 'tiempoTranscurrido', 'tiempo_transcurrido'),
   };
 }
 
