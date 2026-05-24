@@ -116,7 +116,11 @@
           class="flex flex-col gap-2 border-t border-base-300 pt-5 sm:flex-row sm:flex-wrap xl:shrink-0 xl:border-t-0 xl:pt-0"
         >
           @if (mostrarBotonIniciarRuta()) {
-            <button type="button" class="btn btn-success gap-2 text-white sm:btn-sm">
+            <button
+              type="button"
+              class="btn btn-success gap-2 text-white sm:btn-sm"
+              (click)="abrirModalIniciarRuta()"
+            >
               <i class="ri-play-line text-lg" aria-hidden="true"></i>
               Iniciar ruta
             </button>
@@ -557,3 +561,11 @@
     </div>
   }
 </section>
+
+@if (modalIniciarRutaAbierto()) {
+  <app-iniciar-ruta-modal
+    [ejecucionRutaId]="ejecucionRutaId()"
+    (cancelled)="cerrarModalIniciarRuta()"
+    (iniciado)="onRutaIniciada()"
+  />
+}

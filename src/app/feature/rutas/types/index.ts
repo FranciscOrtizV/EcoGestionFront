@@ -1,3 +1,4 @@
+export type { IniciarEjecucionRutaRequest } from './iniciarEjecucionRutaRequest.type';
 export type { EjecucionRutaDetalle } from './ejecucionRutaDetalle.type';
 export type { ResumenEjecucionRutaDto } from './resumenEjecucionRuta.type';
 export type { PuntoEjecucionRutaItemDto } from './puntoEjecucionRuta.type';

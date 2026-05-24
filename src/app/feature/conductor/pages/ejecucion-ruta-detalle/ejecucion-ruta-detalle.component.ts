@@ -19,6 +19,7 @@ import {
   MapPuntosListaComponent,
   type MapaPuntoMarcador,
 } from '../../../../shared/components/map-puntos-lista/map-puntos-lista.component';
+import { IniciarRutaModalComponent } from '../../components/iniciar-ruta-modal/iniciar-ruta-modal.component';
 import { EstadoEjecucionRutaEnum } from '../../../../shared/enums/EstadoEjecucionRutaEnum';
 
 const TURNO_LABELS: Record<TurnoEnum, string> = {
@@ -155,7 +156,7 @@ function mapPuntoDtoToVista(dto: PuntoEjecucionRutaItemDto): PuntoRecoleccionVis
 @Component({
   selector: 'app-ejecucion-ruta-detalle',
   standalone: true,
-  imports: [NgClass, RouterLink, MapPuntosListaComponent],
+  imports: [NgClass, RouterLink, MapPuntosListaComponent, IniciarRutaModalComponent],
   templateUrl: './ejecucion-ruta-detalle.component.html',
   styleUrl: './ejecucion-ruta-detalle.component.css',
 })
@@ -266,6 +267,9 @@ export class EjecucionRutaDetalleComponent {
 
   /** Punto cuyo detalle se muestra en el panel lateral; `null` = cerrado. */
   protected readonly puntoDetalleSidebar = signal<PuntoRecoleccionVista | null>(null);
+
+  /** Modal para registrar odómetro y ubicación al iniciar la ruta. */
+  protected readonly modalIniciarRutaAbierto = signal(false);
 
   /** Valores de ejemplo en la sección evidencia (maquetación). */
   protected readonly evidenciaEjemplo = {
@@ -387,9 +391,62 @@ export class EjecucionRutaDetalleComponent {
 
   @HostListener('document:keydown.escape')
   protected onEscapeCerrarPanel(): void {
+    if (this.modalIniciarRutaAbierto()) {
+      this.cerrarModalIniciarRuta();
+      return;
+    }
     if (this.puntoDetalleSidebar() !== null) {
       this.cerrarDetallePunto();
     }
+  }
+
+  protected abrirModalIniciarRuta(): void {
+    this.modalIniciarRutaAbierto.set(true);
+  }
+
+  protected cerrarModalIniciarRuta(): void {
+    this.modalIniciarRutaAbierto.set(false);
+  }
+
+  protected onRutaIniciada(): void {
+    this.modalIniciarRutaAbierto.set(false);
+    this.recargarDatosEjecucion();
+  }
+
+  private recargarDatosEjecucion(): void {
+    const id = this.ejecucionRutaId();
+    this.puntosCargando.set(true);
+    this.loadingService.setLoading(true);
+
+    forkJoin({
+      resumen: this.ejecucionRutasService.getResumenPorId(id).pipe(
+        catchError(() => {
+          this.resumenError.set(true);
+          toast.error('No se pudo actualizar el resumen de la ejecución.');
+          return of(null);
+        }),
+      ),
+      puntos: this.ejecucionRutasService.getPuntosPorId(id).pipe(
+        catchError(() => {
+          this.puntosError.set(true);
+          toast.error('No se pudieron actualizar los puntos de la ruta.');
+          return of([] as PuntoEjecucionRutaItemDto[]);
+        }),
+      ),
+    })
+      .pipe(
+        finalize(() => {
+          this.loadingService.setLoading(false);
+          this.puntosCargando.set(false);
+        }),
+      )
+      .subscribe(({ resumen, puntos }) => {
+        if (resumen) {
+          this.resumenApi.set(resumen);
+          this.resumenError.set(false);
+        }
+        this.puntosApi.set(puntos);
+      });
   }
 
   protected abrirDetallePunto(p: PuntoRecoleccionVista): void {

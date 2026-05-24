@@ -6,6 +6,7 @@ import type { TurnoEnum } from '../../feature/asignacionRutas/types/createAsigna
 import {
   TipoPuntoColeccionEnum,
 } from '../../feature/puntosRecoleccion/enums/tipo-punto-coleccion.enum';
+import type { IniciarEjecucionRutaRequest } from '../../feature/rutas/types/iniciarEjecucionRutaRequest.type';
 import type { PuntoEjecucionRutaItemDto } from '../../feature/rutas/types/puntoEjecucionRuta.type';
 import type { ResumenEjecucionRutaDto } from '../../feature/rutas/types/resumenEjecucionRuta.type';
 import { EstadoEjecucionPuntoRutaEnum } from '../../shared/enums/EstadoEjecucionPuntoRuta.enum';
@@ -195,5 +196,9 @@ export class EjecucionRutasService {
           .sort((a, b) => a.ordenSecuencia - b.ordenSecuencia),
       ),
     );
+  }
+
+  iniciar(id: string, body: IniciarEjecucionRutaRequest): Observable<void> {
+    return this.http.patch<unknown>(`${this.base}/${id}/iniciar`, body).pipe(map(() => undefined));
   }
 }
