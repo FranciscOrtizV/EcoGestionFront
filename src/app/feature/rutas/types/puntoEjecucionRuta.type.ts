@@ -1,5 +1,6 @@
 import type { TipoPuntoColeccionEnum } from '../../puntosRecoleccion/enums/tipo-punto-coleccion.enum';
 import type { EstadoEjecucionPuntoRutaEnum } from '../../../shared/enums/EstadoEjecucionPuntoRuta.enum';
+import type { EvidenciaPuntoItemDto } from './evidenciaPuntoItem.type';
 
 /** Ítem de GET /ejecucion-rutas/:id/puntos */
 export type PuntoEjecucionRutaItemDto = {
@@ -16,4 +17,7 @@ export type PuntoEjecucionRutaItemDto = {
   longitud: number | null;
   comentarios: string | null;
   estimacionParadaMinutos: number | null;
+  evidencias: EvidenciaPuntoItemDto[];
+  /** URLs absolutas de fotos (atajo derivado de `evidencias`). */
+  fotos: string[];
 };

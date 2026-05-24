@@ -8,6 +8,7 @@ import { environment } from '../../../../../environments/environment';
 import { EjecucionRutasService } from '../../../../core/services/ejecucion-rutas.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 import type { TurnoEnum } from '../../../asignacionRutas/types/createAsignacionRutaRequest.type';
+import type { EvidenciaPuntoItemDto } from '../../../rutas/types/evidenciaPuntoItem.type';
 import type { PuntoEjecucionRutaItemDto } from '../../../rutas/types/puntoEjecucionRuta.type';
 import type { ResumenEjecucionRutaDto } from '../../../rutas/types/resumenEjecucionRuta.type';
 import {
@@ -119,6 +120,8 @@ type PuntoRecoleccionVista = {
   longitud: number | null;
   estado: EstadoPuntoMaquetacion;
   estadoApi: EstadoEjecucionPuntoRutaEnum;
+  evidencias: EvidenciaPuntoItemDto[];
+  fotos: string[];
 };
 
 function mapEstadoPuntoVista(estadoApi: EstadoEjecucionPuntoRutaEnum): EstadoPuntoMaquetacion {
@@ -153,6 +156,8 @@ function mapPuntoDtoToVista(dto: PuntoEjecucionRutaItemDto): PuntoRecoleccionVis
     longitud: dto.longitud,
     estado: mapEstadoPuntoVista(dto.estado),
     estadoApi: dto.estado,
+    evidencias: dto.evidencias,
+    fotos: dto.fotos,
   };
 }
 
@@ -277,6 +282,8 @@ export class EjecucionRutaDetalleComponent {
 
   /** Punto cuyo detalle se muestra en el panel lateral; `null` = cerrado. */
   protected readonly puntoDetalleSidebar = signal<PuntoRecoleccionVista | null>(null);
+  /** Índice activo del carrusel de evidencias en el panel lateral. */
+  protected readonly indiceEvidenciaCarrusel = signal(0);
 
   /** Modal para registrar odómetro y ubicación al iniciar la ruta. */
   protected readonly modalIniciarRutaAbierto = signal(false);
@@ -299,13 +306,6 @@ export class EjecucionRutaDetalleComponent {
     latitud: number | null;
     longitud: number | null;
   } | null>(null);
-
-  /** Valores de ejemplo en la sección evidencia (maquetación). */
-  protected readonly evidenciaEjemplo = {
-    geo: '19.432608, -99.133209',
-    fecha: '24/05/2024',
-    hora: '10:42 a. m.',
-  } as const;
 
   readonly puntosRecoleccion = computed((): PuntoRecoleccionVista[] =>
     this.puntosApi().map((dto) => mapPuntoDtoToVista(dto)),
@@ -571,16 +571,47 @@ export class EjecucionRutaDetalleComponent {
             puntos.map((dto) => mapPuntoDtoToVista(dto)).find((p) => p.id === puntoDetalleId) ??
             null;
           this.puntoDetalleSidebar.set(actualizado);
+          if (actualizado) {
+            this.ajustarIndiceEvidenciaCarrusel(actualizado.evidencias.length);
+          }
         }
       });
   }
 
   protected abrirDetallePunto(p: PuntoRecoleccionVista): void {
+    this.indiceEvidenciaCarrusel.set(0);
     this.puntoDetalleSidebar.set(p);
   }
 
   protected cerrarDetallePunto(): void {
     this.puntoDetalleSidebar.set(null);
+    this.indiceEvidenciaCarrusel.set(0);
+  }
+
+  protected anteriorEvidencia(total: number, event?: Event): void {
+    event?.stopPropagation();
+    event?.preventDefault();
+    this.indiceEvidenciaCarrusel.update((i) => (i <= 0 ? total - 1 : i - 1));
+  }
+
+  protected siguienteEvidencia(total: number, event?: Event): void {
+    event?.stopPropagation();
+    event?.preventDefault();
+    this.indiceEvidenciaCarrusel.update((i) => (i >= total - 1 ? 0 : i + 1));
+  }
+
+  protected irAEvidencia(indice: number): void {
+    this.indiceEvidenciaCarrusel.set(indice);
+  }
+
+  private ajustarIndiceEvidenciaCarrusel(total: number): void {
+    if (total <= 0) {
+      this.indiceEvidenciaCarrusel.set(0);
+      return;
+    }
+    if (this.indiceEvidenciaCarrusel() >= total) {
+      this.indiceEvidenciaCarrusel.set(total - 1);
+    }
   }
 
   protected direccionDetallePunto(p: PuntoRecoleccionVista): string {

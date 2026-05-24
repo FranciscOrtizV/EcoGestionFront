@@ -3,6 +3,7 @@ export type { FinalizarEjecucionRutaRequest } from './finalizarEjecucionRutaRequ
 export type { IniciarEjecucionRutaRequest } from './iniciarEjecucionRutaRequest.type';
 export type { EjecucionRutaDetalle } from './ejecucionRutaDetalle.type';
 export type { ResumenEjecucionRutaDto } from './resumenEjecucionRuta.type';
+export type { EvidenciaPuntoItemDto } from './evidenciaPuntoItem.type';
 export type { PuntoEjecucionRutaItemDto } from './puntoEjecucionRuta.type';
 export type { CreateRutaRequest } from './createRutaRequest.type';
 export type { PuntoRutaLineaRequest } from './puntoRutaLineaRequest.type';

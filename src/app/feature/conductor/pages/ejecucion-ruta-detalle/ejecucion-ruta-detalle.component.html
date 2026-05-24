@@ -135,12 +135,6 @@
               Finalizar ruta
             </button>
           }
-          @if (mostrarBotonReportarIncidenciaGeneral()) {
-            <button type="button" class="btn btn-outline btn-neutral gap-2 sm:btn-sm">
-              <i class="ri-error-warning-line text-lg" aria-hidden="true"></i>
-              Reportar incidencia general
-            </button>
-          }
         </div>
       }
     </div>
@@ -480,68 +474,94 @@
           }
 
           <section class="px-4 py-4">
-            <h4 class="mb-3 text-sm font-bold text-base-content">Evidencia (opcional)</h4>
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <button
-                type="button"
-                class="flex min-h-[8.5rem] flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-base-300 bg-base-200/30 px-3 py-4 text-center text-sm text-base-content/60 transition-colors hover:border-primary/40 hover:bg-base-200/50"
+            <h4 class="mb-3 text-sm font-bold text-base-content">Evidencia</h4>
+            @if (p.evidencias.length === 0) {
+              <p class="text-sm text-base-content/60">Sin fotografías registradas para este punto.</p>
+            } @else {
+              @let evActual = p.evidencias[indiceEvidenciaCarrusel()];
+              @let totalEvidencias = p.evidencias.length;
+              <div
+                class="overflow-hidden rounded-box border border-base-300 bg-base-200/40"
+                role="region"
+                aria-roledescription="carrusel"
+                aria-label="Evidencias fotográficas del punto"
               >
-                <i class="ri-camera-line text-2xl text-base-content/45" aria-hidden="true"></i>
-                <span>Tomar foto o arrastra una imagen</span>
-              </button>
-            </div>
+                <div class="relative">
+                  <a
+                    [href]="evActual.urlFoto"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block"
+                    [attr.aria-label]="'Ver evidencia ' + evActual.fileName"
+                  >
+                    <img
+                      [src]="evActual.urlFoto"
+                      [alt]="evActual.fileName || 'Evidencia fotográfica'"
+                      class="aspect-square w-full object-cover"
+                      loading="lazy"
+                    />
+                  </a>
 
-            <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <label class="form-control w-full">
-                <span class="label py-0 pt-1"><span class="label-text text-xs">Geolocalización</span></span>
-                <div class="relative">
-                  <i
-                    class="ri-map-pin-user-line pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base-content/45"
-                    aria-hidden="true"
-                  ></i>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full pl-9 pr-9 font-mono text-xs"
-                    [value]="evidenciaEjemplo.geo"
-                    readonly
-                  />
-                  <i
-                    class="ri-checkbox-circle-fill pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-success"
-                    aria-hidden="true"
-                  ></i>
+                  @if (totalEvidencias > 1) {
+                    <button
+                      type="button"
+                      class="btn btn-circle btn-xs absolute left-2 top-1/2 -translate-y-1/2 border-0 bg-base-100/85 shadow-sm backdrop-blur-sm"
+                      (click)="anteriorEvidencia(totalEvidencias, $event)"
+                      aria-label="Evidencia anterior"
+                    >
+                      <i class="ri-arrow-left-s-line text-base" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-circle btn-xs absolute right-2 top-1/2 -translate-y-1/2 border-0 bg-base-100/85 shadow-sm backdrop-blur-sm"
+                      (click)="siguienteEvidencia(totalEvidencias, $event)"
+                      aria-label="Evidencia siguiente"
+                    >
+                      <i class="ri-arrow-right-s-line text-base" aria-hidden="true"></i>
+                    </button>
+                    <span
+                      class="absolute bottom-2 right-2 rounded-box bg-base-content/70 px-2 py-0.5 text-[0.65rem] font-medium tabular-nums text-base-100"
+                      aria-live="polite"
+                    >
+                      {{ indiceEvidenciaCarrusel() + 1 }} / {{ totalEvidencias }}
+                    </span>
+                  }
                 </div>
-              </label>
-              <label class="form-control w-full">
-                <span class="label py-0 pt-1"><span class="label-text text-xs">Fecha</span></span>
-                <div class="relative">
-                  <i
-                    class="ri-calendar-line pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base-content/45"
-                    aria-hidden="true"
-                  ></i>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full pl-9 font-mono text-xs"
-                    [value]="evidenciaEjemplo.fecha"
-                    readonly
-                  />
+
+                <div class="flex items-center justify-between gap-1 px-2 py-1.5">
+                  <span
+                    class="badge badge-xs"
+                    [ngClass]="evActual.origen === 'INCIDENCIA' ? 'badge-warning' : 'badge-neutral'"
+                  >
+                    {{ evActual.origen === 'INCIDENCIA' ? 'Incidencia' : 'Punto' }}
+                  </span>
+                  @if (evActual.takenAt) {
+                    <span class="truncate text-[0.65rem] text-base-content/55">
+                      {{ formatoTiempoChequeo(evActual.takenAt) }}
+                    </span>
+                  }
                 </div>
-              </label>
-              <label class="form-control w-full">
-                <span class="label py-0 pt-1"><span class="label-text text-xs">Hora</span></span>
-                <div class="relative">
-                  <i
-                    class="ri-time-line pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base-content/45"
-                    aria-hidden="true"
-                  ></i>
-                  <input
-                    type="text"
-                    class="input input-bordered input-sm w-full pl-9 font-mono text-xs"
-                    [value]="evidenciaEjemplo.hora"
-                    readonly
-                  />
-                </div>
-              </label>
-            </div>
+
+                @if (totalEvidencias > 1) {
+                  <div class="flex justify-center gap-1.5 border-t border-base-300 px-2 py-2">
+                    @for (ev of p.evidencias; track ev.id; let i = $index) {
+                      <button
+                        type="button"
+                        class="h-1.5 rounded-full transition-all"
+                        [ngClass]="
+                          i === indiceEvidenciaCarrusel()
+                            ? 'w-4 bg-primary'
+                            : 'w-1.5 bg-base-content/25'
+                        "
+                        (click)="irAEvidencia(i)"
+                        [attr.aria-label]="'Ir a evidencia ' + (i + 1)"
+                        [attr.aria-current]="i === indiceEvidenciaCarrusel() ? 'true' : null"
+                      ></button>
+                    }
+                  </div>
+                }
+              </div>
+            }
           </section>
         </div>
       </aside>

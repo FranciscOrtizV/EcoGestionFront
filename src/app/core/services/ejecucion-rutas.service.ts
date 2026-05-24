@@ -10,6 +10,7 @@ import {
 import type { ActualizarEstadoPuntoEjecucionRequest } from '../../feature/rutas/types/actualizarEstadoPuntoEjecucionRequest.type';
 import type { FinalizarEjecucionRutaRequest } from '../../feature/rutas/types/finalizarEjecucionRutaRequest.type';
 import type { IniciarEjecucionRutaRequest } from '../../feature/rutas/types/iniciarEjecucionRutaRequest.type';
+import type { EvidenciaPuntoItemDto } from '../../feature/rutas/types/evidenciaPuntoItem.type';
 import type { PuntoEjecucionRutaItemDto } from '../../feature/rutas/types/puntoEjecucionRuta.type';
 import type { ResumenEjecucionRutaDto } from '../../feature/rutas/types/resumenEjecucionRuta.type';
 import { EstadoEjecucionPuntoRutaEnum } from '../../shared/enums/EstadoEjecucionPuntoRuta.enum';
@@ -111,6 +112,66 @@ function coerceEnumValue<T extends string>(v: unknown, values: readonly T[], fal
   return values.includes(s) ? s : fallback;
 }
 
+function apiOrigin(): string {
+  return environment.apiUrl.replace(/\/api\/?$/i, '');
+}
+
+function resolverUrlFoto(url: string): string {
+  const trimmed = url.trim();
+  if (trimmed === '') {
+    return '';
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return trimmed.startsWith('/') ? `${apiOrigin()}${trimmed}` : `${apiOrigin()}/${trimmed}`;
+}
+
+function coerceOrigenEvidencia(v: unknown): 'PUNTO' | 'INCIDENCIA' {
+  const s = String(v ?? '')
+    .trim()
+    .toUpperCase();
+  return s === 'INCIDENCIA' ? 'INCIDENCIA' : 'PUNTO';
+}
+
+function pickStrArray(o: Record<string, unknown>, camel: string, snake: string): string[] {
+  const v = o[camel] ?? o[snake];
+  if (!Array.isArray(v)) {
+    return [];
+  }
+  return v
+    .map((item) => String(item ?? '').trim())
+    .filter((s) => s !== '');
+}
+
+function mapPayloadToEvidenciaDto(raw: Record<string, unknown>): EvidenciaPuntoItemDto {
+  const fileUrl = pickStr(raw, 'fileUrl', 'file_url');
+  const urlFotoRaw =
+    pickStr(raw, 'urlFoto', 'url_foto') || fileUrl;
+
+  return {
+    id: pickStr(raw, 'id', 'id'),
+    fileUrl,
+    urlFoto: resolverUrlFoto(urlFotoRaw),
+    fileName: pickStr(raw, 'fileName', 'file_name'),
+    mimeType: pickStr(raw, 'mimeType', 'mime_type'),
+    fileSizeBytes: pickNum(raw, 'fileSizeBytes', 'file_size_bytes'),
+    latitud: pickNum(raw, 'latitud', 'latitud'),
+    longitud: pickNum(raw, 'longitud', 'longitud'),
+    takenAt: pickIsoDate(raw, 'takenAt', 'taken_at'),
+    createdAt: pickIsoDate(raw, 'createdAt', 'created_at') ?? '',
+    origen: coerceOrigenEvidencia(raw['origen']),
+  };
+}
+
+function pickEvidenciasArray(o: Record<string, unknown>): EvidenciaPuntoItemDto[] {
+  const v = o['evidencias'];
+  if (!Array.isArray(v)) {
+    return [];
+  }
+  return v.filter(isRecord).map((item) => mapPayloadToEvidenciaDto(item));
+}
+
 function coerceTurno(v: unknown): TurnoEnum {
   const s = String(v ?? '')
     .trim()
@@ -161,6 +222,11 @@ function mapPayloadToPuntoDto(raw: Record<string, unknown>): PuntoEjecucionRutaI
     pickNullStr(raw, 'zonaNombre', 'zona_nombre') ||
     '';
 
+  const evidencias = pickEvidenciasArray(raw);
+  const fotosDesdeApi = pickStrArray(raw, 'fotos', 'fotos').map(resolverUrlFoto);
+  const fotos =
+    fotosDesdeApi.length > 0 ? fotosDesdeApi : evidencias.map((e) => e.urlFoto).filter(Boolean);
+
   return {
     id: pickStr(raw, 'id', 'id'),
     nombre: pickStr(raw, 'nombre', 'nombre') || pickStr(raw, 'nombrePunto', 'nombre_punto'),
@@ -182,6 +248,8 @@ function mapPayloadToPuntoDto(raw: Record<string, unknown>): PuntoEjecucionRutaI
     longitud: pickNum(raw, 'longitud', 'longitud'),
     comentarios: pickNullStr(raw, 'comentarios', 'comentarios'),
     estimacionParadaMinutos: pickNum(raw, 'estimacionParadaMinutos', 'estimacion_parada_minutos'),
+    evidencias,
+    fotos,
   };
 }
 
