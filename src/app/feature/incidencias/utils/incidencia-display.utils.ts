@@ -60,6 +60,13 @@ export function isIncidenciaEstadoAbierto(estado: string): boolean {
   return !ESTADOS_CERRADOS.has(normalizeIncidenciaCodigo(estado));
 }
 
+export function incidenciaTieneDatosResolucion(d: {
+  comentarioResolucion: string | null;
+  fechaResolucion: string | null;
+}): boolean {
+  return Boolean(d.comentarioResolucion?.trim() || d.fechaResolucion);
+}
+
 export function isIncidenciaPrioridadAlta(prioridad: string): boolean {
   const p = normalizeIncidenciaCodigo(prioridad);
   return p === PrioridadIncidenciaEnum.ALTA || p === PrioridadIncidenciaEnum.CRITICA;

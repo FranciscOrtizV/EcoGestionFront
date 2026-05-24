@@ -12,6 +12,7 @@ import type { IncidenciaDetalle } from '../../feature/incidencias/types/incidenc
 import type { IncidenciaEvidencia } from '../../feature/incidencias/types/incidenciaEvidencia.type';
 import type { IncidenciaListItem } from '../../feature/incidencias/types/incidenciaListItem.type';
 import type { ReportarIncidenciaPuntoRequest } from '../../feature/incidencias/types/reportarIncidenciaPuntoRequest.type';
+import type { ResolverIncidenciaRequest } from '../../feature/incidencias/types/resolverIncidenciaRequest.type';
 
 @Injectable({ providedIn: 'root' })
 export class IncidenciasService {
@@ -29,6 +30,12 @@ export class IncidenciasService {
     return this.http
       .get<ApiResponse<IncidenciaDetalleApiDto>>(`${this.listBase}/${id}`)
       .pipe(map((res) => mapIncidenciaDetalle(unwrapApiData(res))));
+  }
+
+  resolverIncidencia(id: string, body: ResolverIncidenciaRequest): Observable<void> {
+    return this.http
+      .patch<ApiResponse<unknown>>(`${this.listBase}/${id}/resolucion`, body)
+      .pipe(map(() => undefined));
   }
 
   reportarPunto(body: ReportarIncidenciaPuntoRequest): Observable<void> {
@@ -99,6 +106,8 @@ function mapIncidenciaDetalle(dto: IncidenciaDetalleApiDto): IncidenciaDetalle {
     longitud: Number.isFinite(dto.longitud) ? dto.longitud : null,
     fechaReporte: dto.fechaReporte ? coerceFechaReporte(dto.fechaReporte) : null,
     evidencias: (dto.evidencias ?? []).map(mapIncidenciaEvidencia),
+    comentarioResolucion: dto.comentarioResolucion?.trim() || null,
+    fechaResolucion: dto.fechaResolucion ? coerceFechaReporte(dto.fechaResolucion) : null,
   };
 }
 

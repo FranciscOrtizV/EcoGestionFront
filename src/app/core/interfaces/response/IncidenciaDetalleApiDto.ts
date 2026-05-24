@@ -21,4 +21,6 @@ export type IncidenciaDetalleApiDto = {
   longitud: number;
   fechaReporte?: string;
   evidencias?: IncidenciaEvidenciaApiDto[];
+  comentarioResolucion?: string | null;
+  fechaResolucion?: string | null;
 };

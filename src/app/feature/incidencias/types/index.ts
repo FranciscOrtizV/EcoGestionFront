@@ -2,3 +2,4 @@ export type { ReportarIncidenciaPuntoRequest } from './reportarIncidenciaPuntoRe
 export type { IncidenciaListItem } from './incidenciaListItem.type';
 export type { IncidenciaDetalle, IncidenciaUsuarioRef } from './incidenciaDetalle.type';
 export type { IncidenciaEvidencia } from './incidenciaEvidencia.type';
+export type { ResolverIncidenciaRequest } from './resolverIncidenciaRequest.type';

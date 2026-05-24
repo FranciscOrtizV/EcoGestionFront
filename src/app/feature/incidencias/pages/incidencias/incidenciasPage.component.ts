@@ -118,4 +118,8 @@ export class IncidenciasPage implements OnInit {
   protected cerrarDetalleIncidenciaSidebar(): void {
     this.incidenciaDetalleSidebarId.set(null);
   }
+
+  protected onIncidenciaResueltaEnSidebar(): void {
+    this.loadIncidencias();
+  }
 }

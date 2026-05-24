@@ -8,9 +8,12 @@ import {
   type MapaPuntoMarcador,
 } from '../../../../shared/components/map-puntos-lista/map-puntos-lista.component';
 import type { IncidenciaDetalle } from '../../types/incidenciaDetalle.type';
+import { ResolverIncidenciaModalComponent } from '../resolver-incidencia-modal/resolver-incidencia-modal.component';
 import {
   estadoIncidenciaBadgeClass,
   formatFechaReporteIncidencia,
+  incidenciaTieneDatosResolucion,
+  isIncidenciaEstadoAbierto,
   labelEstadoIncidencia,
   labelPrioridadIncidencia,
   labelTipoIncidenciaNombre,
@@ -21,7 +24,7 @@ import {
 @Component({
   selector: 'app-incidencia-detalle-sidebar',
   standalone: true,
-  imports: [DecimalPipe, NgClass, MapPuntosListaComponent],
+  imports: [DecimalPipe, NgClass, MapPuntosListaComponent, ResolverIncidenciaModalComponent],
   templateUrl: './incidencia-detalle-sidebar.component.html',
   styleUrl: './incidencia-detalle-sidebar.component.css',
 })
@@ -31,10 +34,22 @@ export class IncidenciaDetalleSidebarComponent implements OnInit {
   readonly incidenciaId = input.required<string>();
 
   closed = output<void>();
+  incidenciaResuelta = output<void>();
 
   protected readonly loading = signal(true);
   protected readonly detalle = signal<IncidenciaDetalle | null>(null);
   protected readonly indiceEvidenciaCarrusel = signal(0);
+  protected readonly modalResolverAbierto = signal(false);
+
+  protected readonly puedeResolver = computed(() => {
+    const d = this.detalle();
+    return d ? isIncidenciaEstadoAbierto(d.estado) : false;
+  });
+
+  protected readonly tieneResolucion = computed(() => {
+    const d = this.detalle();
+    return d ? incidenciaTieneDatosResolucion(d) : false;
+  });
 
   protected readonly labelPrioridad = computed(() => {
     const d = this.detalle();
@@ -83,6 +98,10 @@ export class IncidenciaDetalleSidebarComponent implements OnInit {
 
   @HostListener('document:keydown.escape')
   protected onEscape(): void {
+    if (this.modalResolverAbierto()) {
+      this.cerrarModalResolver();
+      return;
+    }
     this.cerrar();
   }
 
@@ -117,6 +136,20 @@ export class IncidenciaDetalleSidebarComponent implements OnInit {
 
   protected irAEvidencia(indice: number): void {
     this.indiceEvidenciaCarrusel.set(indice);
+  }
+
+  protected abrirModalResolver(): void {
+    this.modalResolverAbierto.set(true);
+  }
+
+  protected cerrarModalResolver(): void {
+    this.modalResolverAbierto.set(false);
+  }
+
+  protected onIncidenciaResuelta(): void {
+    this.modalResolverAbierto.set(false);
+    this.cargarDetalle();
+    this.incidenciaResuelta.emit();
   }
 
   protected cerrar(): void {

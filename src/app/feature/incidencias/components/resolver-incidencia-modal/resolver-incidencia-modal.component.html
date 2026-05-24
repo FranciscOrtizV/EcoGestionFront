@@ -1,0 +1,76 @@
+<div
+  class="modal modal-open z-[250]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-resolver-incidencia-modal-title"
+>
+  <div
+    class="modal-box relative z-10 max-w-lg"
+    (click)="$event.stopPropagation()"
+  >
+    <h3 id="app-resolver-incidencia-modal-title" class="text-lg font-bold">
+      Resolver incidencia
+    </h3>
+    <p class="py-2 text-sm text-base-content/70">
+      Registra el cierre de
+      <span class="font-medium text-base-content">{{ incidenciaTitulo() }}</span>.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="space-y-4">
+      <div>
+        <label for="ri-estado" class="mb-1 block text-sm text-base-content/80">Estado final *</label>
+        <select
+          id="ri-estado"
+          formControlName="estado"
+          class="select select-bordered w-full bg-base-100"
+          [ngClass]="fieldInvalid('estado') ? 'select-error' : ''"
+        >
+          @for (op of opcionesEstado; track op.value) {
+            <option [value]="op.value">{{ op.label }}</option>
+          }
+        </select>
+        @if (fieldInvalid('estado')) {
+          <p class="mt-1 text-sm text-error">El estado es obligatorio.</p>
+        }
+      </div>
+
+      <div>
+        <label for="ri-comentario" class="mb-1 block text-sm text-base-content/80">
+          Comentario de resolución *
+        </label>
+        <textarea
+          id="ri-comentario"
+          formControlName="comentarioResolucion"
+          rows="4"
+          [attr.maxlength]="comentarioMax"
+          class="textarea textarea-bordered w-full bg-base-100"
+          placeholder="Describe la medida tomada o el motivo del cierre…"
+          [ngClass]="fieldInvalid('comentarioResolucion') ? 'textarea-error' : ''"
+        ></textarea>
+        <p
+          class="mt-1 text-right text-xs tabular-nums"
+          [ngClass]="comentarioLength() > comentarioMax ? 'text-error' : 'text-base-content/50'"
+          aria-live="polite"
+        >
+          {{ comentarioLength() }} / {{ comentarioMax }}
+        </p>
+        @if (comentarioErrorMessage(); as msg) {
+          <p class="mt-1 text-sm text-error">{{ msg }}</p>
+        }
+      </div>
+
+      <div class="modal-action mt-2">
+        <button type="button" class="btn btn-ghost" (click)="onCancel()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          Confirmar resolución
+        </button>
+      </div>
+    </form>
+  </div>
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar"
+  ></button>
+</div>

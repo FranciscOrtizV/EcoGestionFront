@@ -52,6 +52,19 @@
 
           <p class="mt-2 text-xs text-base-content/50 font-mono">{{ d.id }}</p>
 
+          @if (puedeResolver()) {
+            <div class="mt-4">
+              <button
+                type="button"
+                class="btn btn-success btn-sm w-full gap-2"
+                (click)="abrirModalResolver()"
+              >
+                <i class="ri-checkbox-circle-line text-lg" aria-hidden="true"></i>
+                Resolver incidencia
+              </button>
+            </div>
+          }
+
           <dl class="mt-5 flex flex-col gap-4 text-sm">
             <div class="flex gap-3">
               <i class="ri-alert-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
@@ -73,17 +86,19 @@
               </div>
             </div>
 
-            <div class="flex gap-3">
-              <i class="ri-user-follow-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
-              <div>
-                <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
-                  Resuelto por
-                </dt>
-                <dd class="mt-0.5 font-medium text-base-content">
-                  {{ d.resueltoPor?.nombreCompleto ?? '—' }}
-                </dd>
+            @if (!tieneResolucion() && d.resueltoPor) {
+              <div class="flex gap-3">
+                <i class="ri-user-follow-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+                <div>
+                  <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                    Resuelto por
+                  </dt>
+                  <dd class="mt-0.5 font-medium text-base-content">
+                    {{ d.resueltoPor.nombreCompleto }}
+                  </dd>
+                </div>
               </div>
-            </div>
+            }
 
             @if (d.fechaReporte) {
               <div class="flex gap-3">
@@ -144,6 +159,57 @@
             {{ d.descripcion?.trim() || 'Sin descripción registrada.' }}
           </p>
         </section>
+
+        @if (tieneResolucion()) {
+          <section class="border-b border-base-300 bg-success/5 px-4 py-4">
+            <h4 class="mb-3 flex items-center gap-2 text-sm font-bold text-base-content">
+              <i class="ri-checkbox-circle-line text-success" aria-hidden="true"></i>
+              Resolución
+            </h4>
+            <dl class="flex flex-col gap-3 text-sm">
+              @if (d.fechaResolucion) {
+                <div class="flex gap-3">
+                  <i class="ri-calendar-check-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+                  <div>
+                    <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                      Fecha de resolución
+                    </dt>
+                    <dd class="mt-0.5 font-medium text-base-content">
+                      {{ formatFechaReporteIncidencia(d.fechaResolucion) }}
+                    </dd>
+                  </div>
+                </div>
+              }
+              @if (d.resueltoPor) {
+                <div class="flex gap-3">
+                  <i class="ri-user-follow-line mt-0.5 shrink-0 text-lg text-base-content/45" aria-hidden="true"></i>
+                  <div>
+                    <dt class="text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                      Resuelto por
+                    </dt>
+                    <dd class="mt-0.5 font-medium text-base-content">
+                      {{ d.resueltoPor.nombreCompleto }}
+                    </dd>
+                  </div>
+                </div>
+              }
+            </dl>
+            @if (d.comentarioResolucion?.trim()) {
+              <div class="mt-4">
+                <span class="mb-1 block text-[0.65rem] font-semibold uppercase tracking-wide text-base-content/50">
+                  Comentario de resolución
+                </span>
+                <div
+                  class="rounded-box border border-base-300 bg-base-100 px-3 py-2 text-sm leading-relaxed text-base-content/90 whitespace-pre-wrap"
+                  role="region"
+                  aria-label="Comentario de resolución"
+                >
+                  {{ d.comentarioResolucion }}
+                </div>
+              </div>
+            }
+          </section>
+        }
 
         <section class="border-b border-base-300 px-4 py-4">
           <h4 class="mb-3 text-sm font-bold text-base-content">Ubicación</h4>
@@ -250,4 +316,13 @@
       </div>
     }
   </aside>
+
+  @if (modalResolverAbierto() && detalle(); as d) {
+    <app-resolver-incidencia-modal
+      [incidenciaId]="d.id"
+      [incidenciaTitulo]="d.titulo"
+      (cancelled)="cerrarModalResolver()"
+      (resolved)="onIncidenciaResuelta()"
+    />
+  }
 </div>

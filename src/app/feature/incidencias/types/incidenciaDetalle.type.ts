@@ -20,4 +20,6 @@ export type IncidenciaDetalle = {
   longitud: number | null;
   fechaReporte: string | null;
   evidencias: IncidenciaEvidencia[];
+  comentarioResolucion: string | null;
+  fechaResolucion: string | null;
 };
