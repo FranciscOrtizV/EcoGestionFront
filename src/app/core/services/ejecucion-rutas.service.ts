@@ -2,11 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { type ApiResponse, assertApiSuccess } from '../models/api-response.model';
 import type { TurnoEnum } from '../../feature/asignacionRutas/types/createAsignacionRutaRequest.type';
 import {
   TipoPuntoColeccionEnum,
 } from '../../feature/puntosRecoleccion/enums/tipo-punto-coleccion.enum';
 import type { ActualizarEstadoPuntoEjecucionRequest } from '../../feature/rutas/types/actualizarEstadoPuntoEjecucionRequest.type';
+import type { FinalizarEjecucionRutaRequest } from '../../feature/rutas/types/finalizarEjecucionRutaRequest.type';
 import type { IniciarEjecucionRutaRequest } from '../../feature/rutas/types/iniciarEjecucionRutaRequest.type';
 import type { PuntoEjecucionRutaItemDto } from '../../feature/rutas/types/puntoEjecucionRuta.type';
 import type { ResumenEjecucionRutaDto } from '../../feature/rutas/types/resumenEjecucionRuta.type';
@@ -215,6 +217,15 @@ export class EjecucionRutasService {
 
   iniciar(id: string, body: IniciarEjecucionRutaRequest): Observable<void> {
     return this.http.patch<unknown>(`${this.base}/${id}/iniciar`, body).pipe(map(() => undefined));
+  }
+
+  finalizar(id: string, body: FinalizarEjecucionRutaRequest): Observable<void> {
+    return this.http.patch<ApiResponse<unknown>>(`${this.base}/${id}/finalizar`, body).pipe(
+      map((res) => {
+        assertApiSuccess(res);
+        return undefined;
+      }),
+    );
   }
 
   actualizarEstadoPunto(

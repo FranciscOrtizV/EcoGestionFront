@@ -20,6 +20,7 @@ import {
   type MapaPuntoMarcador,
 } from '../../../../shared/components/map-puntos-lista/map-puntos-lista.component';
 import { ActualizarEstadoPuntoModalComponent } from '../../components/actualizar-estado-punto-modal/actualizar-estado-punto-modal.component';
+import { FinalizarEjecucionRutaModalComponent } from '../../components/finalizar-ejecucion-ruta-modal/finalizar-ejecucion-ruta-modal.component';
 import { IniciarRutaModalComponent } from '../../components/iniciar-ruta-modal/iniciar-ruta-modal.component';
 import { ReportarIncidenciaPuntoModalComponent } from '../../components/reportar-incidencia-punto-modal/reportar-incidencia-punto-modal.component';
 import { EstadoEjecucionRutaEnum } from '../../../../shared/enums/EstadoEjecucionRutaEnum';
@@ -158,7 +159,7 @@ function mapPuntoDtoToVista(dto: PuntoEjecucionRutaItemDto): PuntoRecoleccionVis
 @Component({
   selector: 'app-ejecucion-ruta-detalle',
   standalone: true,
-  imports: [NgClass, RouterLink, MapPuntosListaComponent, IniciarRutaModalComponent, ActualizarEstadoPuntoModalComponent, ReportarIncidenciaPuntoModalComponent],
+  imports: [NgClass, RouterLink, MapPuntosListaComponent, IniciarRutaModalComponent, FinalizarEjecucionRutaModalComponent, ActualizarEstadoPuntoModalComponent, ReportarIncidenciaPuntoModalComponent],
   templateUrl: './ejecucion-ruta-detalle.component.html',
   styleUrl: './ejecucion-ruta-detalle.component.css',
 })
@@ -279,8 +280,8 @@ export class EjecucionRutaDetalleComponent {
 
   /** Modal para registrar odómetro y ubicación al iniciar la ruta. */
   protected readonly modalIniciarRutaAbierto = signal(false);
-   /** Modal placeholder para finalizar ruta (formulario pendiente). */
-   protected readonly modalFinalizarRutaAbierto = signal(false);
+  /** Modal para registrar odómetro final y ubicación al cerrar la ruta. */
+  protected readonly modalFinalizarRutaAbierto = signal(false);
 
   /** Contexto del modal para actualizar estado/comentarios de un punto. */
   protected readonly modalActualizarEstadoPunto = signal<{
@@ -472,6 +473,11 @@ export class EjecucionRutaDetalleComponent {
 
   protected cerrarModalFinalizarRuta(): void {
     this.modalFinalizarRutaAbierto.set(false);
+  }
+
+  protected onRutaFinalizada(): void {
+    this.modalFinalizarRutaAbierto.set(false);
+    this.recargarDatosEjecucion();
   }
 
   protected onRutaIniciada(): void {

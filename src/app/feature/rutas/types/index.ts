@@ -1,4 +1,5 @@
 export type { ActualizarEstadoPuntoEjecucionRequest } from './actualizarEstadoPuntoEjecucionRequest.type';
+export type { FinalizarEjecucionRutaRequest } from './finalizarEjecucionRutaRequest.type';
 export type { IniciarEjecucionRutaRequest } from './iniciarEjecucionRutaRequest.type';
 export type { EjecucionRutaDetalle } from './ejecucionRutaDetalle.type';
 export type { ResumenEjecucionRutaDto } from './resumenEjecucionRuta.type';
