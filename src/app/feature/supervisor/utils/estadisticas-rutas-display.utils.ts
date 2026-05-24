@@ -23,7 +23,8 @@ export function formatKilometrosPromedio(valor: number | null): string {
 }
 
 export function formatFechaCorta(iso: string): string {
-  const [y, m, d] = iso.split('-');
+  const datePart = iso.split('T')[0] ?? iso;
+  const [y, m, d] = datePart.split('-');
   if (!y || !m || !d) return iso;
   return `${d}/${m}/${y}`;
 }

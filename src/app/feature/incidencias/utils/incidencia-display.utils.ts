@@ -15,6 +15,7 @@ const ESTADO_LABEL: Record<string, string> = {
   PENDIENTE: 'Pendiente',
   EN_REVISION: 'En revisión',
   EN_PROCESO: 'En proceso',
+  EN_PROGRESO: 'En progreso',
   RESUELTA: 'Resuelta',
   CERRADA: 'Cerrada',
   CANCELADA: 'Cancelada',

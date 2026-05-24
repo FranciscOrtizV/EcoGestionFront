@@ -28,6 +28,13 @@ export const SUPERVISOR_ROUTES: Routes = [
             (m) => m.SupervisorEstadisticasRutasComponent,
           ),
       },
+      {
+        path: 'estadisticas-incidencias',
+        loadComponent: () =>
+          import('./pages/estadisticas-incidencias/estadisticas-incidencias.component').then(
+            (m) => m.SupervisorEstadisticasIncidenciasComponent,
+          ),
+      },
     ]
   }
 ];
