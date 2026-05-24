@@ -129,6 +129,54 @@ export interface MetricasPuntosRetiro {
   puntosAtendidosDiarios: Array<{ fecha: string; cantidad: number }>;
 }
 
+export interface FiltroMetricasCamioneros {
+  desde?: string;
+  hasta?: string;
+  margenMinutosATiempo?: number;
+}
+
+export interface MetricasCamionerosResumen {
+  totalCamionerosConActividad: number;
+  totalRutasAsignadas: number;
+  totalRutasEjecutadas: number;
+  totalRutasCompletadas: number;
+}
+
+export interface MetricasCamionerosBacklog {
+  conductoresConRutaEnProgreso: number;
+  conductoresConRutaParcial: number;
+}
+
+export interface MetricasCamionerosConductor {
+  conductorId: string;
+  nombreCompleto: string;
+  rutasAsignadas: number;
+  rutasEjecutadas: number;
+  rutasCompletadas: number;
+  rutasParciales: number;
+  rutasCanceladas: number;
+  tiempoPromedioMinutosPorRuta: number | null;
+  promedioKilometrosPorRuta: number | null;
+  rutasEvaluablesTiempo: number;
+  rutasCompletadasATiempo: number;
+  porcentajeCompletadasATiempo: number | null;
+  puntosTotales: number;
+  puntosAtendidos: number;
+  porcentajePuntosAtendidos: number | null;
+  incidenciasEnSusRutas: number;
+  incidenciasReportadas: number;
+}
+
+export interface MetricasCamioneros {
+  periodo: { desde: string | null; hasta: string | null };
+  margenMinutosATiempo: number;
+  resumen: MetricasCamionerosResumen;
+  rankingMasRutas: MetricasCamionerosConductor[];
+  rankingMenorTiempoPromedio: MetricasCamionerosConductor[];
+  backlogActual: MetricasCamionerosBacklog;
+  porConductor: MetricasCamionerosConductor[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class EstadisticasService {
   private readonly http = inject(HttpClient);
@@ -183,6 +231,26 @@ export class EstadisticasService {
 
     return this.http
       .get<ApiResponse<MetricasPuntosRetiro>>(`${this.base}/puntos-retiro`, { params })
+      .pipe(map((res) => unwrapApiData(res)));
+  }
+
+  obtenerMetricasCamioneros(
+    filtro: FiltroMetricasCamioneros = {},
+  ): Observable<MetricasCamioneros> {
+    let params = new HttpParams();
+
+    if (filtro.desde) {
+      params = params.set('desde', filtro.desde);
+    }
+    if (filtro.hasta) {
+      params = params.set('hasta', filtro.hasta);
+    }
+    if (filtro.margenMinutosATiempo != null) {
+      params = params.set('margenMinutosATiempo', String(filtro.margenMinutosATiempo));
+    }
+
+    return this.http
+      .get<ApiResponse<MetricasCamioneros>>(`${this.base}/camioneros`, { params })
       .pipe(map((res) => unwrapApiData(res)));
   }
 }

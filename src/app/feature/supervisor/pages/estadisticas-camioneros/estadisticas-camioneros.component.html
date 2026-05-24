@@ -1,0 +1,157 @@
+<section class="w-full max-w-full">
+  <h3 class="mb-2 text-2xl font-semibold text-base-content">Estadísticas de camioneros</h3>
+  <p class="mb-4 text-sm leading-relaxed text-base-content/70">
+    Desempeño por conductor: rutas asignadas y ejecutadas, cumplimiento en tiempo, puntos atendidos
+    e incidencias en el periodo seleccionado.
+    @if (periodoLabel()) {
+      <span class="block mt-1 text-base-content/60">Periodo: {{ periodoLabel() }}</span>
+    }
+    @if (margenLabel()) {
+      <span class="block text-base-content/60">{{ margenLabel() }}</span>
+    }
+  </p>
+
+  <form
+    class="mb-6 flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-3 md:flex-row md:items-end"
+    (ngSubmit)="buscarPorRango()"
+  >
+    <label class="form-control w-full md:max-w-xs">
+      <span class="label-text text-sm text-base-content/80">Fecha inicio</span>
+      <input
+        type="date"
+        class="input input-bordered input-sm w-full"
+        name="fechaInicio"
+        [(ngModel)]="fechaInicio"
+        required
+      />
+    </label>
+
+    <label class="form-control w-full md:max-w-xs">
+      <span class="label-text text-sm text-base-content/80">Fecha fin</span>
+      <input
+        type="date"
+        class="input input-bordered input-sm w-full"
+        name="fechaFin"
+        [(ngModel)]="fechaFin"
+        required
+      />
+    </label>
+
+    <div class="flex gap-2">
+      <button type="submit" class="btn btn-primary btn-sm">Actualizar</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="resetearRangoActual()">
+        Mes actual
+      </button>
+    </div>
+  </form>
+
+  @if (sinDatos()) {
+    <p class="rounded-box bg-base-100 p-6 text-center text-sm text-base-content/70 shadow">
+      No hay datos de estadísticas para el rango indicado.
+    </p>
+  } @else {
+    <div class="flex w-full flex-row flex-wrap gap-4">
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Camioneros con actividad"
+        [value]="statCamioneros()"
+        cardClass="bg-base-100"
+        valueClass="text-info"
+      />
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Rutas asignadas"
+        [value]="statRutasAsignadas()"
+        cardClass="bg-base-100"
+        valueClass="text-base-content/80"
+      />
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Rutas ejecutadas"
+        [value]="statRutasEjecutadas()"
+        cardClass="bg-base-100"
+        valueClass="text-primary"
+      />
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Rutas completadas"
+        [value]="statRutasCompletadas()"
+        cardClass="bg-base-100"
+        valueClass="text-success"
+      />
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div class="rounded-box bg-base-100 p-4 shadow">
+        <h4 class="mb-4 text-lg font-semibold text-base-content">Resumen de rutas</h4>
+        <div class="estadisticas-camioneros__chart-wrap">
+          <canvas #resumenChartCanvas aria-label="Gráfico resumen de rutas"></canvas>
+        </div>
+      </div>
+
+      <div class="rounded-box bg-base-100 p-4 shadow">
+        <h4 class="mb-4 text-lg font-semibold text-base-content">Rutas por camionero</h4>
+        <div class="estadisticas-camioneros__chart-wrap">
+          <canvas #rankingChartCanvas aria-label="Gráfico de rutas por camionero"></canvas>
+        </div>
+      </div>
+
+      <div class="rounded-box bg-base-100 p-4 shadow">
+        <h4 class="mb-4 text-lg font-semibold text-base-content">Completadas a tiempo</h4>
+        <div class="estadisticas-camioneros__chart-wrap">
+          <canvas #tiempoChartCanvas aria-label="Gráfico de cumplimiento a tiempo"></canvas>
+        </div>
+      </div>
+
+      <div class="rounded-box bg-base-100 p-4 shadow">
+        <h4 class="mb-4 text-lg font-semibold text-base-content">Puntos atendidos</h4>
+        <div class="estadisticas-camioneros__chart-wrap">
+          <canvas #puntosChartCanvas aria-label="Gráfico de puntos atendidos"></canvas>
+        </div>
+      </div>
+    </div>
+
+    @if (tablaConductores().length > 0) {
+      <div class="mt-6 rounded-box bg-base-100 p-4 shadow">
+        <h4 class="mb-4 text-lg font-semibold text-base-content">Detalle por camionero</h4>
+        <div class="overflow-x-auto">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Camionero</th>
+                <th class="text-right">Asign.</th>
+                <th class="text-right">Ejec.</th>
+                <th class="text-right">Compl.</th>
+                <th class="text-right">% a tiempo</th>
+                <th class="text-right">% puntos</th>
+                <th class="text-right">Incid.</th>
+                <th class="text-right">Tiempo prom.</th>
+                <th class="text-right">Km prom.</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of tablaConductores(); track c.conductorId) {
+                <tr>
+                  <td>{{ c.nombreCompleto }}</td>
+                  <td class="text-right">{{ c.rutasAsignadas }}</td>
+                  <td class="text-right">{{ c.rutasEjecutadas }}</td>
+                  <td class="text-right">{{ c.rutasCompletadas }}</td>
+                  <td class="text-right">{{ formatPct(c.porcentajeCompletadasATiempo) }}</td>
+                  <td class="text-right">{{ formatPct(c.porcentajePuntosAtendidos) }}</td>
+                  <td class="text-right">
+                    {{ c.incidenciasReportadas }}
+                    @if (c.incidenciasEnSusRutas > c.incidenciasReportadas) {
+                      <span class="text-base-content/50">({{ c.incidenciasEnSusRutas }})</span>
+                    }
+                  </td>
+                  <td class="text-right">{{ formatMin(c.tiempoPromedioMinutosPorRuta) }}</td>
+                  <td class="text-right">{{ formatKm(c.promedioKilometrosPorRuta) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</section>

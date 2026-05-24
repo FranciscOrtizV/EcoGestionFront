@@ -1,0 +1,8 @@
+.estadisticas-camioneros__chart-wrap {
+  position: relative;
+  min-height: 280px;
+}
+
+.estadisticas-camioneros__chart-wrap canvas {
+  max-height: 320px;
+}

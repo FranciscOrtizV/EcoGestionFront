@@ -58,6 +58,13 @@ export const SIDEBAR_SUPERVISOR: SidebarNavEntry[] = [
     label: 'Estadísticas de puntos de retiro',
     routerLink: '/supervisor/estadisticas-puntos-retiro',
   },
+  {
+    kind: 'link',
+    id: 'sup-estadisticas-camioneros',
+    iconClass: 'ri-user-star-line',
+    label: 'Estadísticas de camioneros',
+    routerLink: '/supervisor/estadisticas-camioneros',
+  },
 ];
 
 export const SIDEBAR_ADMIN: SidebarNavEntry[] = [

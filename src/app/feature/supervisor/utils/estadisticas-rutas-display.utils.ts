@@ -39,3 +39,13 @@ const ESTADO_PUNTO_LABELS: Record<string, string> = {
 export function labelEstadoEjecucionPunto(estado: string): string {
   return ESTADO_PUNTO_LABELS[estado] ?? estado;
 }
+
+export function formatMinutosPromedio(valor: number | null): string {
+  if (valor == null) return '—';
+  return `${valor.toFixed(0)} min`;
+}
+
+export function formatKilometrosEntero(valor: number | null): string {
+  if (valor == null) return '—';
+  return `${Math.round(valor)} km`;
+}

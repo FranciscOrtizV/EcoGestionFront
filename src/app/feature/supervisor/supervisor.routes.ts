@@ -42,6 +42,13 @@ export const SUPERVISOR_ROUTES: Routes = [
             (m) => m.SupervisorEstadisticasPuntosRetiroComponent,
           ),
       },
+      {
+        path: 'estadisticas-camioneros',
+        loadComponent: () =>
+          import('./pages/estadisticas-camioneros/estadisticas-camioneros.component').then(
+            (m) => m.SupervisorEstadisticasCamionerosComponent,
+          ),
+      },
     ]
   }
 ];
