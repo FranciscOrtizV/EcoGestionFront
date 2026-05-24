@@ -1,0 +1,8 @@
+
+export enum EstadoEjecucionRutaEnum {
+  NO_INICIADO = 'NO_INICIADO',
+  EN_PROCESO  = 'EN_PROCESO',
+  COMPLETADO  = 'COMPLETADO',
+  PARCIAL     = 'PARCIAL',
+  CANCELADO   = 'CANCELADO'
+}

@@ -1,1 +1,12 @@
-/* La barra usa `progress progress-success` de daisyUI. */
+@keyframes ejecucion-punto-panel-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.ejecucion-punto-panel {
+  animation: ejecucion-punto-panel-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
