@@ -51,6 +51,13 @@ export const SIDEBAR_SUPERVISOR: SidebarNavEntry[] = [
     label: 'Estadísticas de incidencias',
     routerLink: '/supervisor/estadisticas-incidencias',
   },
+  {
+    kind: 'link',
+    id: 'sup-estadisticas-puntos-retiro',
+    iconClass: 'ri-map-pin-line',
+    label: 'Estadísticas de puntos de retiro',
+    routerLink: '/supervisor/estadisticas-puntos-retiro',
+  },
 ];
 
 export const SIDEBAR_ADMIN: SidebarNavEntry[] = [

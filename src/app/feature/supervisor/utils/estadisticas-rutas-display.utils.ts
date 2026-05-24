@@ -28,3 +28,14 @@ export function formatFechaCorta(iso: string): string {
   if (!y || !m || !d) return iso;
   return `${d}/${m}/${y}`;
 }
+
+const ESTADO_PUNTO_LABELS: Record<string, string> = {
+  PENDIENTE: 'Pendiente',
+  COMPLETADO: 'Completado',
+  SALTADO: 'Saltado',
+  FALLIDO: 'Fallido',
+};
+
+export function labelEstadoEjecucionPunto(estado: string): string {
+  return ESTADO_PUNTO_LABELS[estado] ?? estado;
+}

@@ -72,6 +72,63 @@ export interface MetricasIncidencias {
   incidenciasDiariasReportadas: Array<{ fecha: string; cantidad: number }>;
 }
 
+export interface FiltroMetricasPuntosRetiro {
+  desde?: string;
+  hasta?: string;
+}
+
+export interface MetricasPuntosRetiroResumen {
+  totalPuntos: number;
+  atendidos: number;
+  porAtender: number;
+  saltados: number;
+  fallidos: number;
+  porcentajeAtendidos: number | null;
+  porcentajePorAtender: number | null;
+}
+
+export interface MetricasPuntosRetiroBacklog {
+  porAtenderEnEjecucionesActivas: number;
+  porAtenderEnEjecucionesParciales: number;
+}
+
+export interface MetricasPuntosRetiroPorZona {
+  zonaId: string;
+  zonaNombre: string;
+  total: number;
+  atendidos: number;
+  porcentajeAtendidos: number | null;
+}
+
+export interface MetricasPuntosRetiroPorRuta {
+  rutaId: string;
+  rutaNombre: string;
+  total: number;
+  atendidos: number;
+  porcentajeAtendidos: number | null;
+}
+
+export interface MetricasPuntosRetiroProblema {
+  puntoRecoleccionId: string;
+  puntoNombre: string;
+  totalIncidencias: number;
+  vecesFallido: number;
+  vecesSaltado: number;
+  indiceProblemas: number;
+}
+
+export interface MetricasPuntosRetiro {
+  periodo: { desde: string | null; hasta: string | null };
+  resumen: MetricasPuntosRetiroResumen;
+  backlogActual: MetricasPuntosRetiroBacklog;
+  distribucionPorEstado: Record<string, number>;
+  distribucionPorTipoPunto: Record<string, number>;
+  porZona: MetricasPuntosRetiroPorZona[];
+  porcentajeAtendidosPorRuta: MetricasPuntosRetiroPorRuta[];
+  puntosConMasProblemas: MetricasPuntosRetiroProblema[];
+  puntosAtendidosDiarios: Array<{ fecha: string; cantidad: number }>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EstadisticasService {
   private readonly http = inject(HttpClient);
@@ -109,6 +166,23 @@ export class EstadisticasService {
 
     return this.http
       .get<ApiResponse<MetricasIncidencias>>(`${this.base}/incidencias`, { params })
+      .pipe(map((res) => unwrapApiData(res)));
+  }
+
+  obtenerMetricasPuntosRetiro(
+    filtro: FiltroMetricasPuntosRetiro = {},
+  ): Observable<MetricasPuntosRetiro> {
+    let params = new HttpParams();
+
+    if (filtro.desde) {
+      params = params.set('desde', filtro.desde);
+    }
+    if (filtro.hasta) {
+      params = params.set('hasta', filtro.hasta);
+    }
+
+    return this.http
+      .get<ApiResponse<MetricasPuntosRetiro>>(`${this.base}/puntos-retiro`, { params })
       .pipe(map((res) => unwrapApiData(res)));
   }
 }

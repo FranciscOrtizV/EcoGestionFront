@@ -1,0 +1,8 @@
+.estadisticas-puntos-retiro__chart-wrap {
+  position: relative;
+  min-height: 280px;
+}
+
+.estadisticas-puntos-retiro__chart-wrap canvas {
+  max-height: 320px;
+}

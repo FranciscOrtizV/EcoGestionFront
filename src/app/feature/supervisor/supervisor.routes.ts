@@ -35,6 +35,13 @@ export const SUPERVISOR_ROUTES: Routes = [
             (m) => m.SupervisorEstadisticasIncidenciasComponent,
           ),
       },
+      {
+        path: 'estadisticas-puntos-retiro',
+        loadComponent: () =>
+          import('./pages/estadisticas-puntos-retiro/estadisticas-puntos-retiro.component').then(
+            (m) => m.SupervisorEstadisticasPuntosRetiroComponent,
+          ),
+      },
     ]
   }
 ];
