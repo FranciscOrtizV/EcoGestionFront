@@ -19,6 +19,7 @@ import {
   MapPuntosListaComponent,
   type MapaPuntoMarcador,
 } from '../../../../shared/components/map-puntos-lista/map-puntos-lista.component';
+import { ActualizarEstadoPuntoModalComponent } from '../../components/actualizar-estado-punto-modal/actualizar-estado-punto-modal.component';
 import { IniciarRutaModalComponent } from '../../components/iniciar-ruta-modal/iniciar-ruta-modal.component';
 import { EstadoEjecucionRutaEnum } from '../../../../shared/enums/EstadoEjecucionRutaEnum';
 
@@ -115,6 +116,7 @@ type PuntoRecoleccionVista = {
   latitud: number | null;
   longitud: number | null;
   estado: EstadoPuntoMaquetacion;
+  estadoApi: EstadoEjecucionPuntoRutaEnum;
 };
 
 function mapEstadoPuntoVista(estadoApi: EstadoEjecucionPuntoRutaEnum): EstadoPuntoMaquetacion {
@@ -148,13 +150,14 @@ function mapPuntoDtoToVista(dto: PuntoEjecucionRutaItemDto): PuntoRecoleccionVis
     latitud: dto.latitud,
     longitud: dto.longitud,
     estado: mapEstadoPuntoVista(dto.estado),
+    estadoApi: dto.estado,
   };
 }
 
 @Component({
   selector: 'app-ejecucion-ruta-detalle',
   standalone: true,
-  imports: [NgClass, RouterLink, MapPuntosListaComponent, IniciarRutaModalComponent],
+  imports: [NgClass, RouterLink, MapPuntosListaComponent, IniciarRutaModalComponent, ActualizarEstadoPuntoModalComponent],
   templateUrl: './ejecucion-ruta-detalle.component.html',
   styleUrl: './ejecucion-ruta-detalle.component.css',
 })
@@ -268,6 +271,15 @@ export class EjecucionRutaDetalleComponent {
 
   /** Modal para registrar odómetro y ubicación al iniciar la ruta. */
   protected readonly modalIniciarRutaAbierto = signal(false);
+
+  /** Contexto del modal para actualizar estado/comentarios de un punto. */
+  protected readonly modalActualizarEstadoPunto = signal<{
+    puntoId: string;
+    puntoNombre: string;
+    estadoInicial: EstadoEjecucionPuntoRutaEnum;
+    comentariosIniciales: string | null;
+    estadoPredeterminado: EstadoEjecucionPuntoRutaEnum | null;
+  } | null>(null);
 
   /** Valores de ejemplo en la sección evidencia (maquetación). */
   protected readonly evidenciaEjemplo = {
@@ -397,6 +409,10 @@ export class EjecucionRutaDetalleComponent {
 
   @HostListener('document:keydown.escape')
   protected onEscapeCerrarPanel(): void {
+    if (this.modalActualizarEstadoPunto()) {
+      this.cerrarModalActualizarEstadoPunto();
+      return;
+    }
     if (this.modalIniciarRutaAbierto()) {
       this.cerrarModalIniciarRuta();
       return;
@@ -419,7 +435,27 @@ export class EjecucionRutaDetalleComponent {
     this.recargarDatosEjecucion();
   }
 
-  private recargarDatosEjecucion(): void {
+  protected abrirModalMarcarCompletado(p: PuntoRecoleccionVista): void {
+    this.modalActualizarEstadoPunto.set({
+      puntoId: p.id,
+      puntoNombre: p.nombre,
+      estadoInicial: p.estadoApi,
+      comentariosIniciales: p.comentarios,
+      estadoPredeterminado: EstadoEjecucionPuntoRutaEnum.COMPLETADO,
+    });
+  }
+
+  protected cerrarModalActualizarEstadoPunto(): void {
+    this.modalActualizarEstadoPunto.set(null);
+  }
+
+  protected onEstadoPuntoActualizado(): void {
+    this.modalActualizarEstadoPunto.set(null);
+    const puntoId = this.puntoDetalleSidebar()?.id;
+    this.recargarDatosEjecucion(puntoId);
+  }
+
+  private recargarDatosEjecucion(puntoDetalleId?: string): void {
     const id = this.ejecucionRutaId();
     this.puntosCargando.set(true);
     this.loadingService.setLoading(true);
@@ -452,6 +488,12 @@ export class EjecucionRutaDetalleComponent {
           this.resumenError.set(false);
         }
         this.puntosApi.set(puntos);
+        if (puntoDetalleId) {
+          const actualizado =
+            puntos.map((dto) => mapPuntoDtoToVista(dto)).find((p) => p.id === puntoDetalleId) ??
+            null;
+          this.puntoDetalleSidebar.set(actualizado);
+        }
       });
   }
 

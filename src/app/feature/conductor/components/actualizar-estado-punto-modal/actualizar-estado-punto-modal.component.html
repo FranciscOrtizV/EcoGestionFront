@@ -1,0 +1,72 @@
+<div
+  class="modal modal-open z-[250]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="app-actualizar-estado-punto-modal-title"
+>
+  <div
+    class="modal-box relative z-10 flex max-h-[92vh] w-[min(96vw,520px)] max-w-none flex-col overflow-hidden p-0 sm:p-0"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="shrink-0 border-b border-base-300 px-6 pb-3 pt-6">
+      <h3 id="app-actualizar-estado-punto-modal-title" class="text-lg font-bold">
+        Actualizar estado del punto
+      </h3>
+      <p class="pt-2 text-sm text-base-content/70">
+        Registra el nuevo estado de
+        <span class="font-medium text-base-content">{{ puntoNombre() }}</span>
+        y, si lo necesitas, agrega un comentario.
+      </p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex min-h-0 flex-1 flex-col">
+      <div class="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-5">
+        <div>
+          <label for="aep-estado" class="mb-1 block text-sm text-base-content/80">Estado *</label>
+          <select
+            id="aep-estado"
+            formControlName="estado"
+            class="select select-bordered w-full bg-base-100"
+            [ngClass]="fieldInvalid('estado') ? 'select-error' : ''"
+          >
+            @for (op of opcionesEstado; track op.value) {
+              <option [value]="op.value">{{ op.label }}</option>
+            }
+          </select>
+          @if (fieldInvalid('estado')) {
+            <p class="mt-1 text-sm text-error">El estado es obligatorio.</p>
+          }
+        </div>
+
+        <div>
+          <label for="aep-comentarios" class="mb-1 block text-sm text-base-content/80">
+            Comentarios
+          </label>
+          <textarea
+            id="aep-comentarios"
+            formControlName="comentarios"
+            rows="4"
+            class="textarea textarea-bordered w-full bg-base-100"
+            placeholder="Observaciones sobre la visita, incidencias menores, etc."
+          ></textarea>
+          <p class="mt-1 text-xs text-base-content/55">Opcional. Visible en el detalle del punto.</p>
+        </div>
+      </div>
+
+      <div class="modal-action shrink-0 border-t border-base-300 bg-base-100 px-6 py-4">
+        <button type="button" class="btn" (click)="onCancel()">Cancelar</button>
+        <button type="submit" class="btn btn-success text-white">
+          <i class="ri-save-line text-lg" aria-hidden="true"></i>
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <button
+    type="button"
+    class="modal-backdrop bg-base-content/30"
+    (click)="onCancel()"
+    aria-label="Cerrar"
+  ></button>
+</div>

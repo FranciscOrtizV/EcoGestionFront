@@ -459,7 +459,7 @@
             <section class="border-b border-base-300 px-4 py-4">
               <h4 class="mb-3 text-sm font-bold text-base-content">Acciones</h4>
               <div class="flex flex-col gap-2">
-                <button type="button" class="btn btn-success w-full gap-2">
+                <button type="button" class="btn btn-success w-full gap-2" (click)="abrirModalMarcarCompletado(p)">
                   <i class="ri-checkbox-circle-line text-lg" aria-hidden="true"></i>
                   Marcar como completado
                 </button>
@@ -550,5 +550,18 @@
     [ejecucionRutaId]="ejecucionRutaId()"
     (cancelled)="cerrarModalIniciarRuta()"
     (iniciado)="onRutaIniciada()"
+  />
+}
+
+@if (modalActualizarEstadoPunto(); as ctx) {
+  <app-actualizar-estado-punto-modal
+    [ejecucionRutaId]="ejecucionRutaId()"
+    [puntoId]="ctx.puntoId"
+    [puntoNombre]="ctx.puntoNombre"
+    [estadoInicial]="ctx.estadoInicial"
+    [comentariosIniciales]="ctx.comentariosIniciales"
+    [estadoPredeterminado]="ctx.estadoPredeterminado"
+    (cancelled)="cerrarModalActualizarEstadoPunto()"
+    (actualizado)="onEstadoPuntoActualizado()"
   />
 }
