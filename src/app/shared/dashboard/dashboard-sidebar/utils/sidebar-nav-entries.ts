@@ -37,6 +37,13 @@ export const SIDEBAR_SUPERVISOR: SidebarNavEntry[] = [
     label: 'Incidencias',
     routerLink: '/supervisor/incidencias',
   },
+  {
+    kind: 'link',
+    id: 'sup-estadisticas-rutas',
+    iconClass: 'ri-bar-chart-line',
+    label: 'Estadísticas de rutas',
+    routerLink: '/supervisor/estadisticas-rutas',
+  },
 ];
 
 export const SIDEBAR_ADMIN: SidebarNavEntry[] = [

@@ -1,0 +1,96 @@
+<section class="w-full max-w-full">
+  <h3 class="mb-2 text-2xl font-semibold text-base-content">Estadísticas de rutas</h3>
+  <p class="mb-4 text-sm leading-relaxed text-base-content/70">
+    Resumen de ejecuciones, cumplimiento en tiempo e incidencias en el periodo seleccionado.
+    @if (periodoLabel()) {
+      <span class="block mt-1 text-base-content/60">Periodo: {{ periodoLabel() }}</span>
+    }
+  </p>
+
+  <form
+    class="mb-6 flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-3 md:flex-row md:items-end"
+    (ngSubmit)="buscarPorRango()"
+  >
+    <label class="form-control w-full md:max-w-xs">
+      <span class="label-text text-sm text-base-content/80">Fecha inicio</span>
+      <input
+        type="date"
+        class="input input-bordered input-sm w-full"
+        name="fechaInicio"
+        [(ngModel)]="fechaInicio"
+        required
+      />
+    </label>
+
+    <label class="form-control w-full md:max-w-xs">
+      <span class="label-text text-sm text-base-content/80">Fecha fin</span>
+      <input
+        type="date"
+        class="input input-bordered input-sm w-full"
+        name="fechaFin"
+        [(ngModel)]="fechaFin"
+        required
+      />
+    </label>
+
+    <div class="flex gap-2">
+      <button type="submit" class="btn btn-primary btn-sm">Actualizar</button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="resetearRangoActual()">
+        Mes actual
+      </button>
+    </div>
+  </form>
+
+  @if (sinDatos()) {
+    <p class="rounded-box bg-base-100 p-6 text-center text-sm text-base-content/70 shadow">
+      No hay datos de estadísticas para el rango indicado.
+    </p>
+  } @else {
+    <div class="flex w-full flex-row flex-wrap gap-4">
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Ejecuciones totales"
+        [value]="statTotalEjecuciones()"
+        cardClass="bg-base-100"
+        valueClass="text-info"
+      />
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Completadas a tiempo"
+        [value]="statCompletadasATiempo()"
+        cardClass="bg-base-100"
+        valueClass="text-success"
+      />
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Con incidencias"
+        [value]="statConIncidencias()"
+        cardClass="bg-base-100"
+        valueClass="text-warning"
+      />
+      <app-stat-card
+        class="block min-w-0 flex-1"
+        title="Km promedio recorridos"
+        [value]="statKmPromedio()"
+        cardClass="bg-base-100"
+        valueClass="text-primary"
+      />
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div class="rounded-box bg-base-100 p-4 shadow">
+        <h4 class="mb-4 text-lg font-semibold text-base-content">Distribución por estado</h4>
+        <div class="estadisticas-rutas__chart-wrap">
+          <canvas #estadoChartCanvas aria-label="Gráfico de distribución por estado"></canvas>
+        </div>
+      </div>
+
+      <div class="rounded-box bg-base-100 p-4 shadow">
+        <h4 class="mb-4 text-lg font-semibold text-base-content">Rutas diarias ejecutadas</h4>
+        <div class="estadisticas-rutas__chart-wrap">
+          <canvas #diariasChartCanvas aria-label="Gráfico de rutas diarias ejecutadas"></canvas>
+        </div>
+      </div>
+    </div>
+  }
+</section>
